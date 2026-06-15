@@ -9,11 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #fffbf7; /* 稍亮且更乾淨的溫暖背景 */
+      --bg: #fffbf7;
       --ink: #2c2c2c;
       --muted: #767676;
       
-      /* 天數漸層色彩變數 */
+      /* 天數單色（print fallback 及 dot 使用） */
+      --d1: #e85d4a; --d2: #3d8fd4; --d3: #f5a623; --d4: #5cb85c;
+      --d5: #9b6fd4; --d6: #e87aab; --d7: #f07840; --d8: #4a9fd8;
+      
+      /* 天數漸層色彩 */
       --d1-grad: linear-gradient(135deg, #e85d4a, #ff7b00);
       --d2-grad: linear-gradient(135deg, #3d8fd4, #1b4965);
       --d3-grad: linear-gradient(135deg, #f5a623, #ffb703);
@@ -23,15 +27,13 @@
       --d7-grad: linear-gradient(135deg, #f07840, #d94e34);
       --d8-grad: linear-gradient(135deg, #4a9fd8, #0077b6);
       
-      /* 共用品牌色漸層 */
+      /* 共用品牌色 */
       --purple: #7b5ea7;
       --purple-grad: linear-gradient(135deg, #7b5ea7, #5a189a);
       --orange: #f07840;
       --orange-grad: linear-gradient(135deg, #f07840, #d94e34);
       
-      --radius: 20px; /* 更柔和的圓角 */
-      
-      /* 高質感微弱陰影 */
+      --radius: 20px;
       --shadow: 0 8px 24px rgba(120, 100, 80, 0.05), 0 2px 6px rgba(120, 100, 80, 0.03);
       --shadow-hover: 0 16px 36px rgba(120, 100, 80, 0.12), 0 4px 12px rgba(120, 100, 80, 0.05);
     }
@@ -93,6 +95,11 @@
       background: radial-gradient(circle at 10% 20%, #ffe8cc 0%, transparent 45%),
                   radial-gradient(circle at 90% 10%, #d4ecff 0%, transparent 40%);
       opacity: .6; pointer-events: none;
+    }
+    .hero::after {
+      content: ""; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='30' cy='30' r='1.2' fill='%23e8d5c0' fill-opacity='0.35'/%3E%3C/svg%3E");
+      pointer-events: none;
     }
     .hero h1 {
       font-size: 44px; font-weight: 900; letter-spacing: .06em;
@@ -208,12 +215,13 @@
     .tag.blue { background: #eaf4ff; color: #1a6fb5; border-color: #b8daf5; box-shadow: 0 1px 2px rgba(26, 111, 181, 0.03); }
     .tag.green { background: #eaf8ea; color: #2d7a2d; border-color: #b8e5b8; box-shadow: 0 1px 2px rgba(45, 122, 45, 0.03); }
     .drive {
-      margin-top: 10px; padding: 10px 12px; background: #fffbf5;
+      margin-top: 10px; padding: 10px 12px 10px 14px; background: #fffbf5;
       border-radius: 12px; border-left: 4px solid var(--orange);
       font-size: 11.5px; color: #555;
       box-shadow: inset 0 0 0 1px rgba(240, 120, 64, 0.05);
     }
     .drive strong { color: #333; font-size: 11px; }
+    .drive strong::before { content: "🚗 "; font-size: 11px; }
 
     /* Sidebar */
     .sidebar { display: flex; flex-direction: column; gap: 16px; }
@@ -243,6 +251,11 @@
       width: 28px; height: 28px; border-radius: 50%; color: #fff;
       font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s;
+    }
+    .overview-item:hover .dot {
+      transform: scale(1.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
     }
     .tips li {
       font-size: 12.5px; color: #444; margin-bottom: 8px;
@@ -256,6 +269,10 @@
       font-size: 22px; font-weight: 900; margin-bottom: 16px;
       display: flex; align-items: center; gap: 10px;
       color: var(--ink);
+    }
+    .section-title::before {
+      content: "🍊";
+      font-size: 22px;
     }
     .food-row {
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
@@ -303,16 +320,23 @@
     .check-item::before { content: "✓"; color: #3a9d3a; font-weight: 900; }
     .closing {
       margin-top: 24px; text-align: center; position: relative;
-      background: #fff; border-radius: 24px; padding: 24px; box-shadow: var(--shadow);
+      background: linear-gradient(135deg, #fffbf5 0%, #fff3e6 50%, #eaf4ff 100%);
+      border-radius: 24px; padding: 28px 24px; box-shadow: var(--shadow);
+      overflow: hidden;
     }
-    .closing img { width: 90px; height: 90px; object-fit: contain; transition: transform 0.3s ease; }
+    .closing::before {
+      content: ""; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='0.8' fill='%23f0c080' fill-opacity='0.3'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .closing img { width: 90px; height: 90px; object-fit: contain; transition: transform 0.3s ease; position: relative; z-index: 1; }
     .closing:hover img { transform: scale(1.1) rotate(5deg); }
     
     /* 吉祥物對話泡泡微動畫 */
     .bubble {
       display: inline-block; background: #fff8e8; border: 2px solid #ffd9a0;
       border-radius: 20px; padding: 12px 24px; margin-top: 10px;
-      font-weight: 700; font-size: 16px; position: relative;
+      font-weight: 700; font-size: 16px; position: relative; z-index: 1;
       box-shadow: 0 4px 12px rgba(255, 217, 160, 0.2);
       animation: bounce 2s infinite ease-in-out;
     }
@@ -322,14 +346,33 @@
     }
     .icon { width: 14px; height: 14px; vertical-align: -2px; }
 
+    /* 版本資訊 Badge */
+    .version-badge {
+      margin-top: 20px; text-align: center;
+    }
+    .version-badge span {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; color: #a0927e;
+      background: rgba(255,255,255,0.7); border: 1px solid #ecd9c8;
+      border-radius: 999px; padding: 5px 14px;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(4px);
+    }
+    .version-badge span::before {
+      content: "📌";
+      font-size: 11px;
+    }
+
     @media print {
-      .toolbar { display: none !important; }
+      .toolbar, .version-badge { display: none !important; }
       body { background: #fff; }
       .page { width: 100%; padding: 0; }
       .hero, .day-card, .side-card, .food-row, .info-card, .closing {
         box-shadow: none !important; border: 1px solid #eee !important;
         transform: none !important;
       }
+      .hero::after, .closing::before { display: none !important; }
+      .closing { background: #fff !important; }
       .day-head[style*="--d1"] { background: var(--d1) !important; }
       .day-head[style*="--d2"] { background: var(--d2) !important; }
       .day-head[style*="--d3"] { background: var(--d3) !important; }
@@ -604,7 +647,28 @@
         <img src="assets/hallabong-mascot.png" alt="吉祥物" />
         <div class="bubble">一起出發去濟州島吧！</div>
       </div>
+
+      <div class="version-badge">
+        <span id="version-info"></span>
+      </div>
     </section>
   </div>
+
+  <script>
+    // 自動顯示最後更新日期時間（以瀏覽器本地時區呈現）
+    (function() {
+      var el = document.getElementById('version-info');
+      if (!el) return;
+      // 使用 build timestamp，每次匯出 PNG 或載入時自動更新
+      var now = new Date();
+      var pad = function(n) { return n < 10 ? '0' + n : n; };
+      var ts = now.getFullYear() + '/' +
+               pad(now.getMonth() + 1) + '/' +
+               pad(now.getDate()) + ' ' +
+               pad(now.getHours()) + ':' +
+               pad(now.getMinutes());
+      el.textContent = '最後更新：' + ts;
+    })();
+  </script>
 </body>
 </html>
