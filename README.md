@@ -69,12 +69,13 @@ git remote add origin https://github.com/<你的帳號>/jeju-2026-itinerary.git
 git push -u origin main
 ```
 
-### GitHub Pages（選用）
+### GitHub Pages（線上預覽）
 
-1. Repository → Settings → Pages
-2. Source 選 **Deploy from a branch**
-3. Branch 選 `main`，資料夾選 `/ (root)`
-4. 儲存後可用 `https://<帳號>.github.io/jeju-2026-itinerary/` 預覽
+**網址：** https://kuoyuan111.github.io/jeju-2026-itinerary/
+
+首次啟用請到 Repository → **Settings** → **Pages** → **Build and deployment** → Source 選 **GitHub Actions**。
+
+之後每次 `git push` 到 `main`，會自動部署最新行程。可在 **Actions** 分頁查看部署狀態。
 
 ## 圖片清單
 
