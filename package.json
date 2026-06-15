@@ -1,0 +1,15 @@
+{
+  "name": "jeju-2026-itinerary",
+  "version": "1.0.0",
+  "description": "2026 濟州島 8天7夜自駕行程資訊圖",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node validate-assets.mjs",
+    "export:png": "node validate-assets.mjs && node export-png.mjs",
+    "preview": "npx --yes serve . -p 3456"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
+  }
+}

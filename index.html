@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 濟州島 8天7夜行程攻略</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fff9f2;
+      --ink: #2b2b2b;
+      --muted: #666;
+      --d1: #e85d4a;
+      --d2: #3d8fd4;
+      --d3: #f5a623;
+      --d4: #5cb85c;
+      --d5: #9b6fd4;
+      --d6: #e87aab;
+      --d7: #f07840;
+      --d8: #4a9fd8;
+      --purple: #7b5ea7;
+      --orange: #f07840;
+      --radius: 18px;
+      --shadow: 0 4px 18px rgba(0,0,0,.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    .toolbar {
+      position: sticky; top: 0; z-index: 99;
+      background: rgba(255,249,242,.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #f0e4d8;
+      padding: 10px 20px;
+      display: flex; gap: 12px; justify-content: center;
+    }
+    .toolbar button {
+      border: none; border-radius: 999px; padding: 10px 22px;
+      font-family: inherit; font-weight: 700; cursor: pointer;
+      background: var(--orange); color: #fff;
+    }
+    .toolbar button.secondary { background: #fff; color: var(--ink); border: 2px solid #ecd9c8; }
+    .page {
+      width: 1320px; max-width: 100%; margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    /* Header */
+    .hero {
+      position: relative; text-align: center;
+      padding: 36px 20px 28px; margin-bottom: 24px;
+      background: #fff; border-radius: 28px; box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle at 10% 20%, #ffe8cc 0%, transparent 45%),
+                  radial-gradient(circle at 90% 10%, #d4ecff 0%, transparent 40%);
+      opacity: .7; pointer-events: none;
+    }
+    .hero h1 {
+      font-size: 42px; font-weight: 900; letter-spacing: .04em;
+      position: relative; z-index: 1;
+    }
+    .hero .subtitle {
+      display: inline-block; margin-top: 14px; padding: 8px 22px;
+      background: var(--orange); color: #fff; border-radius: 999px;
+      font-weight: 700; font-size: 15px; position: relative; z-index: 1;
+    }
+    .hero-deco { position: absolute; opacity: .9; }
+    .hero-deco.left { left: 24px; bottom: 16px; }
+    .hero-deco.right { right: 24px; bottom: 10px; width: 110px; }
+    .flight-box {
+      position: absolute; top: 20px; right: 20px; z-index: 2;
+      background: #fff; border: 2px solid #f0e0d0; border-radius: 14px;
+      padding: 12px 16px; text-align: left; font-size: 12px; min-width: 200px;
+    }
+    .flight-box strong { display: block; font-size: 13px; margin-bottom: 6px; color: var(--d2); }
+    .flight-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 4px; color: var(--muted); }
+
+    /* Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px; align-items: start;
+    }
+    .days-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Day card */
+    .day-card {
+      background: #fff; border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+      display: flex; flex-direction: column;
+      break-inside: avoid; page-break-inside: avoid;
+    }
+    .day-head {
+      color: #fff; padding: 12px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .day-head .num { font-size: 22px; font-weight: 900; letter-spacing: .06em; }
+    .day-head .meta { font-size: 13px; font-weight: 700; text-align: right; }
+    .day-body { padding: 14px 16px 16px; flex: 1; display: grid; grid-template-columns: 1fr 88px; gap: 12px; }
+    .day-photo {
+      width: 88px; height: 88px; border-radius: 14px; object-fit: cover;
+      border: 3px solid #f5f0ea;
+    }
+    .slot { margin-bottom: 10px; }
+    .slot-label {
+      font-size: 12px; font-weight: 800; margin-bottom: 4px;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .slot ul { list-style: none; font-size: 12.5px; color: #444; }
+    .slot li { padding-left: 14px; position: relative; margin-bottom: 3px; }
+    .slot li::before { content: "•"; position: absolute; left: 0; color: #bbb; }
+    .tag {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 999px; margin: 2px 4px 6px 0;
+      background: #fff3e6; color: #c45d00; border: 1px solid #ffd4a8;
+    }
+    .tag.blue { background: #eaf4ff; color: #1a6fb5; border-color: #b8daf5; }
+    .tag.green { background: #eaf8ea; color: #2d7a2d; border-color: #b8e5b8; }
+    .drive {
+      margin-top: 8px; padding: 8px 10px; background: #faf7f3;
+      border-radius: 10px; border-left: 4px solid #ddd;
+      font-size: 11.5px; color: #666;
+    }
+    .drive strong { color: #333; font-size: 11px; }
+
+    /* Sidebar */
+    .sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .side-card {
+      background: #fff; border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .side-head {
+      padding: 12px 16px; color: #fff; font-weight: 800; font-size: 15px;
+    }
+    .side-head.purple { background: var(--purple); }
+    .side-head.orange { background: var(--orange); }
+    .side-body { padding: 14px 16px; }
+    .overview-item {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 10px; font-size: 13px;
+    }
+    .dot {
+      width: 28px; height: 28px; border-radius: 50%; color: #fff;
+      font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .tips li {
+      font-size: 12.5px; color: #444; margin-bottom: 8px;
+      padding-left: 18px; position: relative;
+    }
+    .tips li::before { content: "✦"; position: absolute; left: 0; color: var(--orange); font-size: 10px; top: 3px; }
+
+    /* Bottom sections */
+    .bottom { margin-top: 24px; }
+    .section-title {
+      font-size: 22px; font-weight: 900; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .food-row {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+      background: #fff; border-radius: var(--radius); padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .food-item { text-align: center; }
+    .food-item img {
+      width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+      border: 4px solid #fff; box-shadow: 0 2px 10px rgba(0,0,0,.1);
+      margin-bottom: 8px;
+    }
+    .food-item span { font-size: 12px; font-weight: 700; display: block; }
+    .points-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;
+    }
+    .info-card {
+      background: #fff; border-radius: var(--radius); padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    .info-card h3 { font-size: 16px; margin-bottom: 10px; color: var(--d4); }
+    .info-card li { font-size: 13px; color: #444; margin-bottom: 6px; margin-left: 18px; }
+    .check-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .check-item {
+      font-size: 13px; padding: 8px 12px; background: #f3faf3;
+      border-radius: 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .check-item::before { content: "✓"; color: #3a9d3a; font-weight: 900; }
+    .closing {
+      margin-top: 24px; text-align: center; position: relative;
+      background: #fff; border-radius: 24px; padding: 20px; box-shadow: var(--shadow);
+    }
+    .closing img { width: 90px; height: 90px; object-fit: contain; }
+    .bubble {
+      display: inline-block; background: #fff8e8; border: 2px solid #ffd9a0;
+      border-radius: 20px; padding: 12px 20px; margin-top: 10px;
+      font-weight: 700; font-size: 16px; position: relative;
+    }
+    .icon { width: 14px; height: 14px; vertical-align: -2px; }
+
+    @media print {
+      .toolbar { display: none !important; }
+      body { background: #fff; }
+      .page { width: 100%; padding: 0; }
+      .hero, .day-card, .side-card, .food-row, .info-card, .closing {
+        box-shadow: none; border: 1px solid #eee;
+      }
+      .main-grid { grid-template-columns: 1fr 260px; }
+    }
+    @media (max-width: 1100px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .sidebar { display: grid; grid-template-columns: 1fr 1fr; }
+      .flight-box { position: static; margin: 16px auto 0; max-width: 280px; }
+    }
+    @media (max-width: 720px) {
+      .days-grid, .sidebar, .food-row, .points-grid { grid-template-columns: 1fr; }
+      .day-body { grid-template-columns: 1fr; }
+      .day-photo { width: 100%; height: 120px; }
+      .hero h1 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar no-print">
+    <button onclick="window.print()">列印 / 存成 PDF</button>
+    <button class="secondary" onclick="alert('在專案資料夾執行：npm run export:png\\n會產生 jeju-2026-itinerary.png')">PNG 匯出說明</button>
+  </div>
+
+  <div class="page" id="infographic">
+    <header class="hero">
+      <div class="flight-box">
+        <strong>航班資訊</strong>
+        <div class="flight-row"><span>去程 TW688</span><span>7/4 14:25→17:30</span></div>
+        <div class="flight-row"><span>回程 LJ763</span><span>7/11 22:15→00:15</span></div>
+      </div>
+
+      <svg class="hero-deco left" width="100" height="80" viewBox="0 0 100 80" aria-hidden="true">
+        <ellipse cx="50" cy="65" rx="35" ry="8" fill="#e8d5c0" opacity=".5"/>
+        <path d="M20 60 Q30 20 50 35 Q70 20 80 60 Z" fill="#6ab04c"/>
+        <path d="M45 35 L50 15 L55 35 Z" fill="#4a8f38"/>
+        <circle cx="75" cy="25" r="14" fill="#ffcc66"/>
+      </svg>
+
+      <h1>濟州島 8天7夜行程攻略</h1>
+      <div class="subtitle">2026/7/4（六）～7/11（六）・自駕遊・VENTIMO・輕鬆放電之旅</div>
+
+      <img class="hero-deco right" src="assets/hallabong-mascot.png" alt="濟州橘吉祥物" />
+    </header>
+
+    <div class="main-grid">
+      <div class="days-grid">
+
+        <article class="day-card">
+          <div class="day-head" style="background:var(--d1)">
+            <span class="num">DAY 1</span>
+            <span class="meta">7/4（六）<br/>抵達・租車・熟成到</span>
+          </div>
+          <div class="day-body">
+            <div>
+              <span class="tag">已預約晚餐</span>
+              <div class="slot"><div class="slot-label"><svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M2 16h20M5 16l2-10h10l2 10" stroke="#e85d4a" stroke-width="2"/></svg> 上午</div>
+                <ul><li>10:40 機場接送</li><li>11:40 桃園 T1・德威 TW688</li><li>14:25 起飛 — 17:30 抵達（2h05m）</li></ul></div>
+              <div class="slot"><div class="slot-label"><svg class="icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="12" rx="2" stroke="#e85d4a" stroke-width="2"/><path d="M8 8V6a4 4 0 018 0v2" stroke="#e85d4a" stroke-width="2"/></svg> 傍晚</div>
+                <ul><li>18:30 租車</li><li>19:30 VENTIMO Check-in</li></ul></div>
+              <div class="slot"><div class="slot-label"><svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 10h16v8H4z M8 10V7h8v3" stroke="#e85d4a" stroke-width="2"/></svg> 晚餐</div>
+                <ul><li>20:30 熟成到（已預約）</li><li>車程 5 分 / 1.7km</li></ul></div>
+            </div>
+            <img class="day-photo" src="assets/scene-jeju-coast.png" alt="濟州海岸" />
+          </div>
+        </article>
+
+        <article class="day-card">
+          <div class="day-head" style="background:var(--d2)">
+            <span class="num">DAY 2</span>
+            <span class="meta">7/5（日）<br/>史努比・城邑民俗村</span>
+          </div>
+          <div class="day-body">
+            <div>
+              <div class="slot"><div class="slot-label">上午</div>
+                <ul><li>09:00 出發 → 10:00 史努比花園（9:00–19:00）</li></ul></div>
+              <div class="slot"><div class="slot-label">午餐</div><ul><li>園內用餐</li></ul></div>
+              <div class="slot"><div class="slot-label">下午</div>
+                <ul><li>14:00 離開 → 14:30 城邑民俗村</li><li>免費中文導覽約 40 分</li><li>16:00 回飯店</li></ul></div>
+              <div class="slot"><div class="slot-label">晚上</div><ul><li>超市採買</li></ul></div>
+              <div class="drive"><strong>車程</strong><br/>40分/30km · 20分/13km · 50分/35km</div>
+            </div>
+            <img class="day-photo" src="assets/scene-snoopy.png" alt="史努比花園" />
+          </div>
+        </article>
+
+        <article class="day-card">
+          <div class="day-head" style="background:var(--d3)">
+            <span class="num">DAY 3</span>
+            <span class="meta">7/6（一）<br/>9.81 Park・神話主題公園</span>
+          </div>
+          <div class="day-body">
+            <div>
+              <div class="slot"><div class="slot-label">上午</div>
+                <ul><li>09:00 出發 → 09:30 9.81 Park</li><li>11:30 離開</li></ul></div>
+              <div class="slot"><div class="slot-label">午餐</div><ul><li>12:00 神話主題公園商業街</li></ul></div>
+              <div class="slot"><div class="slot-label">下午</div><ul><li>17:00 離開 → 18:00 回飯店</li></ul></div>
+              <div class="drive"><strong>車程</strong><br/>21分/18km · 13分/13km · 35分/29km</div>
+            </div>
+            <img class="day-photo" src="assets/scene-jeju-coast.png" alt="主題公園" />
+          </div>
+        </article>
+
+        <article class="day-card">
+          <div class="day-head" style="background:var(--d4)">
+            <span class="num">DAY 4</span>
+            <span class="meta">7/7（二）<br/>牛島・城山日出峰</span>
+          </div>
+          <div class="day-body">
+            <div>
+              <span class="tag green">帶護照</span><span class="tag">暈船藥</span>
+              <div class="slot"><div class="slot-label">上午</div>
+                <ul><li>08:30 出發（1h/46km）</li><li>買船票・填表・船行 15 分</li><li>10:00 前到牛島租車</li></ul></div>
+              <div class="slot"><div class="slot-label">午餐</div>
+                <ul><li>Pungwon 風園漢拏山炒飯</li><li>黑豬肉主菜後炒成飯</li></ul></div>
+              <div class="slot"><div class="slot-label">下午</div>
+                <ul><li>14:00 離開牛島 → 城山日出峰</li><li>15:30 回飯店（1h10m）</li></ul></div>
+              <div class="slot"><div class="slot-label">晚上</div><ul><li>超市購物・晚餐</li></ul></div>
+            </div>
+            <img class="day-photo" src="assets/food-black-pork.png" alt="黑豬肉" />
+          </div>
+        </article>
+
+        <article class="day-card">
+          <div class="day-head" style="background:var(--d5)">
+            <span class="num">DAY 5</span>
+            <span class="meta">7/8（三）<br/>繞島・山房山・偶來市場</span>
+          </div>
+          <div class="day-body">
+            <div>
+              <div class="slot"><div class="slot-label">上午</div>
+                <ul><li>09:00 出發 → 11:30 前 山房山樂園</li><li>13:30 離開</li></ul></div>
+              <div class="slot"><div class="slot-label">下午</div>
+                <ul><li>14:30 西歸浦偶來市場</li><li>15:30 離開 → 17:00 回飯店</li></ul></div>
+              <span class="tag blue">滿足商會（帶魚）</span><span class="tag blue">Bon 本豬</span>
+              <div class="drive"><strong>車程</strong><br/>50分/37km · 45分/27km · 1h10/43km</div>
+            </div>
+            <img class="day-photo" src="assets/scene-jeju-coast.png" alt="繞島" />
+          </div>
+        </article>
+
+        <article class="day-card">
+          <div class="day-head" style="background:var(--d6)">
+            <span class="num">DAY 6</span>
+            <span class="meta">7/9（四）<br/>蓮洞商圈・亂打秀</span>
+          </div>
+          <div class="day-body">
+            <div>
+              <div class="slot"><div class="slot-label">白天</div>
+                <ul><li>東門市場（8號出口近夜市）</li><li>七星購物街・中央地下街</li><li>AKKOMI（9、10 出口）可試吃、會中文</li><li>推薦：橘子乾、巧克力片</li></ul></div>
+              <div class="slot"><div class="slot-label">晚上</div><ul><li>亂打秀（可安排）</li></ul></div>
+            </div>
+            <img class="day-photo" src="assets/hallabong-mascot.png" alt="蓮洞" />
+          </div>
+        </article>
+
+        <article class="day-card">
+          <div class="day-head" style="background:var(--d7)">
+            <span class="num">DAY 7</span>
+            <span class="meta">7/10（五）<br/>咸德海灘・落火祭</span>
+          </div>
+          <div class="day-body">
+            <div>
+              <span class="tag">Flowave 已預約</span><span class="tag green">已付 5 萬韓元</span>
+              <div class="slot"><div class="slot-label">白天</div>
+                <ul><li>10:00 出發・咸德海灘咖啡廳巡禮</li><li>大蒜麵包・倫敦貝果博物館</li><li>15:00 回飯店休息 2h</li></ul></div>
+              <div class="slot"><div class="slot-label">晚上</div>
+                <ul><li>18:00 咖啡廳晚餐 / Flowave 落火祭</li></ul></div>
+            </div>
+            <img class="day-photo" src="assets/food-garlic-bread.png" alt="大蒜麵包" />
+          </div>
+        </article>
+
+        <article class="day-card">
+          <div class="day-head" style="background:var(--d8)">
+            <span class="num">DAY 8</span>
+            <span class="meta">7/11（六）<br/>環島・還車返程</span>
+          </div>
+          <div class="day-body">
+            <div>
+              <span class="tag blue">亂打秀可排</span>
+              <div class="slot"><div class="slot-label">上午</div>
+                <ul><li>環島晃晃・11:00 退房</li></ul></div>
+              <div class="slot"><div class="slot-label">傍晚</div>
+                <ul><li>19:00 加油 → 20:00 機場還車</li><li>LJ763 22:15 起飛 → 00:15 抵達 T1</li></ul></div>
+            </div>
+            <img class="day-photo" src="assets/scene-jeju-coast.png" alt="返程" />
+          </div>
+        </article>
+      </div>
+
+      <aside class="sidebar">
+        <div class="side-card">
+          <div class="side-head purple">行程快速總覽</div>
+          <div class="side-body">
+            <div class="overview-item"><span class="dot" style="background:var(--d1)">1</span>抵達・租車・熟成到</div>
+            <div class="overview-item"><span class="dot" style="background:var(--d2)">2</span>史努比・城邑民俗村</div>
+            <div class="overview-item"><span class="dot" style="background:var(--d3)">3</span>9.81・神話主題公園</div>
+            <div class="overview-item"><span class="dot" style="background:var(--d4)">4</span>牛島・城山日出峰</div>
+            <div class="overview-item"><span class="dot" style="background:var(--d5)">5</span>山房山・偶來市場</div>
+            <div class="overview-item"><span class="dot" style="background:var(--d6)">6</span>蓮洞商圈・亂打秀</div>
+            <div class="overview-item"><span class="dot" style="background:var(--d7)">7</span>咸德・落火祭</div>
+            <div class="overview-item"><span class="dot" style="background:var(--d8)">8</span>環島・還車返程</div>
+          </div>
+        </div>
+        <div class="side-card">
+          <div class="side-head orange">小提醒</div>
+          <div class="side-body">
+            <ul class="tips">
+              <li>入境前完成韓國網路入境申辦</li>
+              <li>必帶：暈船藥、摩托車國際駕照、護照</li>
+              <li>牛島買船票需護照</li>
+              <li>雨天備室內方案（神話公園、地下街）</li>
+              <li>大型超市 E-MART 每月約兩天公休</li>
+            </ul>
+          </div>
+        </div>
+        <div class="side-card">
+          <div class="side-head orange">機場退稅</div>
+          <div class="side-body">
+            <ul class="tips">
+              <li>5 號出口右轉</li>
+              <li>16 登機口對面領退稅</li>
+              <li>免稅精品 20 登機口領取</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="bottom">
+      <div class="section-title">必吃美食推薦</div>
+      <div class="food-row">
+        <div class="food-item"><img src="assets/food-black-pork.png" alt="" /><span>黑豬肉燒肉</span></div>
+        <div class="food-item"><img src="assets/food-abalone.png" alt="" /><span>鮑魚粥</span></div>
+        <div class="food-item"><img src="assets/food-garlic-bread.png" alt="" /><span>大蒜麵包</span></div>
+        <div class="food-item"><img src="assets/hallabong-mascot.png" alt="" /><span>濟州柑橘</span></div>
+        <div class="food-item"><img src="assets/scene-jeju-coast.png" alt="" /><span>帶魚・海鮮</span></div>
+      </div>
+
+      <div class="points-grid">
+        <div class="info-card">
+          <h3>VENTIMO 附近採買</h3>
+          <ul>
+            <li>CU 便利商店：飯店 1 樓隔壁，24h</li>
+            <li>中型超市：步行 3 分，蓮洞 290 巷 Mart</li>
+            <li>E-MART 新濟州店：車程 12 分，大採購首選</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h3>行程小重點</h3>
+          <div class="check-grid">
+            <div class="check-item">自駕彈性高</div>
+            <div class="check-item">熟成到已預約</div>
+            <div class="check-item">Flowave 已預約</div>
+            <div class="check-item">牛島需護照</div>
+            <div class="check-item">大蒜麵包 Day 4/7</div>
+            <div class="check-item">亂打秀 Day 6/8</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="closing">
+        <img src="assets/hallabong-mascot.png" alt="吉祥物" />
+        <div class="bubble">一起出發去濟州島吧！</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
