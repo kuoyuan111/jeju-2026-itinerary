@@ -2329,66 +2329,100 @@
       var map, markerGroup, lineGroup;
       var currentActiveDay = 'all';
 
+      // 景點經緯度與搜尋名稱對照表 (點位資料庫)
+      var placeDictionary = [
+        { name: '濟州國際機場', search: '제주국제공항', lat: 33.5113, lng: 126.4930, keywords: ['濟州國際機場', '機場', '제주국제공항'] },
+        { name: 'VENTIMO 飯店', search: '벤티모 호텔', lat: 33.4890, lng: 126.4851, keywords: ['VENTIMO', '벤티모', '飯店', '酒店', '退房'] },
+        { name: '熟成到 (老衡店)', search: '숙성도 노형점', lat: 33.4839, lng: 126.4795, keywords: ['熟成到', '숙성도'] },
+        { name: '史努比花園', search: '스누피가든', lat: 33.4542, lng: 126.7791, keywords: ['史努比花園', '史努比', '스누피가든'] },
+        { name: '城邑民俗村', search: '성읍민속마을', lat: 33.3838, lng: 126.7995, keywords: ['城邑民俗村', '民俗村', '성읍민속마을'] },
+        { name: '9.81 Park', search: '9.81 파크', lat: 33.3643, lng: 126.3576, keywords: ['9.81 Park', '9.81 파크', '9.81'] },
+        { name: '神話主題公園', search: '신화테麻파크', lat: 33.3061, lng: 126.3154, keywords: ['神話主題公園', '神話公園', '神話', '신화테마파크', '신화테麻파크'] },
+        { name: '城山港 (牛島渡輪)', search: '성산항', lat: 33.4733, lng: 126.9328, keywords: ['城山港', '성산항'] },
+        { name: '牛島', search: '우도', lat: 33.5065, lng: 126.9538, keywords: ['牛島', '우도'] },
+        { name: '城山日出峰', search: '성산일출봉', lat: 33.4590, lng: 126.9421, keywords: ['城山日出峰', '日出峰', '성산일출봉'] },
+        { name: '山房山樂園', search: '산방산랜드', lat: 33.2438, lng: 126.3142, keywords: ['山房山樂園', '山房山', '산방산랜드'] },
+        { name: '西歸浦偶來市場', search: '서귀포매일올레시장', lat: 33.2501, lng: 126.5645, keywords: ['西歸浦偶來市場', '偶來市場', '서귀포매일올레시장'] },
+        { name: '東門市場', search: '동문재래시장', lat: 33.5126, lng: 126.5283, keywords: ['東門市場', '東門', '동문재래시장'] },
+        { name: '濟州亂打秀劇場', search: '제주난타극장', lat: 33.5042, lng: 126.5410, keywords: ['亂打秀', '난타'] },
+        { name: '咸德海灘', search: '함덕해수욕장', lat: 33.5430, lng: 126.6682, keywords: ['咸德海灘', '咸德', '함덕해수욕장'] },
+        { name: 'Flowave 落火祭', search: '플로우웨이브', lat: 33.5398, lng: 126.6710, keywords: ['Flowave', '落火祭', '落火', '플로우웨이브'] }
+      ];
+
       var mapData = {
-        1: {
-          color: '#e85d4a',
-          points: [
-            { name: '濟州國際機場', search: '제주국제공항', lat: 33.5113, lng: 126.4930 },
-            { name: 'VENTIMO 飯店', search: '벤티모 호텔', lat: 33.4890, lng: 126.4851 },
-            { name: '熟成到 (老衡店)', search: '숙성도 노형점', lat: 33.4839, lng: 126.4795 }
-          ]
-        },
-        2: {
-          color: '#3d8fd4',
-          points: [
-            { name: '史努比花園', search: '스누피가든', lat: 33.4542, lng: 126.7791 },
-            { name: '城邑民俗村', search: '성읍민속마을', lat: 33.3838, lng: 126.7995 }
-          ]
-        },
-        3: {
-          color: '#f5a623',
-          points: [
-            { name: '9.81 Park', search: '9.81 파크', lat: 33.3643, lng: 126.3576 },
-            { name: '神話主題公園', search: '신화테麻파크', lat: 33.3061, lng: 126.3154 }
-          ]
-        },
-        4: {
-          color: '#5cb85c',
-          points: [
-            { name: '城山港 (牛島渡輪)', search: '성산항', lat: 33.4733, lng: 126.9328 },
-            { name: '牛島', search: '우도', lat: 33.5065, lng: 126.9538 },
-            { name: '城山日出峰', search: '성산일출봉', lat: 33.4590, lng: 126.9421 }
-          ]
-        },
-        5: {
-          color: '#9b6fd4',
-          points: [
-            { name: '山房山樂園', search: '산방산랜드', lat: 33.2438, lng: 126.3142 },
-            { name: '西歸浦偶來市場', search: '서귀포매일올레시장', lat: 33.2501, lng: 126.5645 }
-          ]
-        },
-        6: {
-          color: '#e87aab',
-          points: [
-            { name: '東門市場', search: '동문재래시장', lat: 33.5126, lng: 126.5283 },
-            { name: '濟州亂打秀劇場', search: '제주난타극장', lat: 33.5042, lng: 126.5410 }
-          ]
-        },
-        7: {
-          color: '#f07840',
-          points: [
-            { name: '咸德海灘', search: '함덕해수욕장', lat: 33.5430, lng: 126.6682 },
-            { name: 'Flowave 落火祭', search: '플로우웨이브', lat: 33.5398, lng: 126.6710 }
-          ]
-        },
-        8: {
-          color: '#4a9fd8',
-          points: [
-            { name: 'VENTIMO 退房', search: '벤티모 호텔', lat: 33.4890, lng: 126.4851 },
-            { name: '機場還車', search: '제주국제공항', lat: 33.5113, lng: 126.4930 }
-          ]
-        }
+        1: { color: '#e85d4a' },
+        2: { color: '#3d8fd4' },
+        3: { color: '#f5a623' },
+        4: { color: '#5cb85c' },
+        5: { color: '#9b6fd4' },
+        6: { color: '#e87aab' },
+        7: { color: '#f07840' },
+        8: { color: '#4a9fd8' }
       };
+
+      // 動態從 DOM 的行程中提取景點點位
+      function getDayPointsFromDom(dayNum) {
+        var card = document.querySelector('[data-editable="day' + dayNum + '"]');
+        if (!card) return [];
+
+        var points = [];
+        var lis = card.querySelectorAll('.day-body ul li');
+        lis.forEach(function(li) {
+          var text = li.textContent || '';
+          var matches = [];
+          
+          placeDictionary.forEach(function(place) {
+            place.keywords.forEach(function(kw) {
+              var idx = -1;
+              while ((idx = text.indexOf(kw, idx + 1)) !== -1) {
+                matches.push({
+                  place: place,
+                  start: idx,
+                  end: idx + kw.length
+                });
+              }
+            });
+          });
+
+          // 過濾重疊的匹配（優先保留較長的匹配，長度相同則以先出現者優先）
+          matches.sort(function(a, b) {
+            var lenA = a.end - a.start;
+            var lenB = b.end - b.start;
+            if (lenA !== lenB) return lenB - lenA;
+            return a.start - b.start;
+          });
+
+          var selected = [];
+          matches.forEach(function(m) {
+            var overlap = selected.some(function(s) {
+              return !(m.end <= s.start || m.start >= s.end);
+            });
+            if (!overlap) {
+              selected.push(m);
+            }
+          });
+
+          // 排序 (依出現在句子中的先後順序)
+          selected.sort(function(a, b) {
+            return a.start - b.start;
+          });
+
+          selected.forEach(function(s) {
+            var lastPt = points[points.length - 1];
+            // 避免完全相鄰的重複點，但若中間有隔其他景點則允許重複（以反映真實繞道）
+            if (!lastPt || lastPt.name !== s.place.name) {
+              points.push({
+                name: s.place.name,
+                search: s.place.search,
+                lat: s.place.lat,
+                lng: s.place.lng
+              });
+            }
+          });
+        });
+
+        return points;
+      }
 
       function getDayInfoFromDom(dayNum) {
         var el = document.querySelector('[data-editable="day' + dayNum + '"]');
@@ -2476,7 +2510,8 @@
             var dayLatLngs = [];
             var domInfo = getDayInfoFromDom(d) || { title: 'DAY ' + d, desc: '' };
             
-            dayInfo.points.forEach(function(pt) {
+            var points = getDayPointsFromDom(d);
+            points.forEach(function(pt) {
               var latlng = [pt.lat, pt.lng];
               dayLatLngs.push(latlng);
               allLatLngs.push(latlng);
@@ -2526,7 +2561,8 @@
           var domInfo = getDayInfoFromDom(day) || { title: 'DAY ' + day, desc: '暫無行程內容' };
           var dayLatLngs = [];
 
-          dayInfo.points.forEach(function(pt, idx) {
+          var points = getDayPointsFromDom(day);
+          points.forEach(function(pt, idx) {
             var latlng = [pt.lat, pt.lng];
             dayLatLngs.push(latlng);
             bounds.push(latlng);
