@@ -485,6 +485,74 @@
     .edit-list-item .remove-item:hover {
       background: #fcc; transform: scale(1.1);
     }
+    /* 圖片上傳區樣式 */
+    .image-upload-area {
+      border: 2px dashed #ecd9c8;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      background: #fffbf7;
+      transition: all 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .image-upload-area:hover, .image-upload-area.drag-over {
+      border-color: var(--orange);
+      background: #fff5ed;
+    }
+    .image-upload-preview {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 10px;
+      border: 1px solid #f2e3d5;
+      border-radius: 16px;
+      background: #faf6f2;
+    }
+    .image-upload-preview img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .image-upload-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .image-upload-actions button {
+      padding: 6px 12px;
+      font-size: 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s;
+      border: 1px solid #ecd9c8;
+      background: #fff;
+      color: var(--ink);
+    }
+    .image-upload-actions button.primary {
+      background: var(--orange-grad);
+      color: #fff;
+      border: none;
+    }
+    .image-upload-actions button.danger {
+      background: #fee;
+      color: #e53935;
+      border-color: #fcc;
+    }
+    .image-upload-actions button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
     .add-item-btn {
       border: 2px dashed #ecd9c8; background: transparent; border-radius: 12px;
       padding: 10px; width: 100%; font-family: inherit; font-size: 13px;
@@ -936,6 +1004,17 @@
       var STORAGE_KEY = 'jeju-itinerary-edits';
       var editMode = false;
       var currentField = null;
+      var originalDayPhotos = {
+        day1: 'assets/scene-jeju-coast.png',
+        day2: 'assets/scene-snoopy.png',
+        day3: 'assets/scene-jeju-coast.png',
+        day4: 'assets/food-black-pork.png',
+        day5: 'assets/scene-jeju-coast.png',
+        day6: 'assets/hallabong-mascot.png',
+        day7: 'assets/food-garlic-bread.png',
+        day8: 'assets/scene-jeju-coast.png'
+      };
+      var tempUploadedPhoto = null;
 
       // 原始內容備份
       var originalData = {
@@ -1100,6 +1179,92 @@
         food: '必吃美食推薦'
       };
 
+      // === 圖片壓縮與輔助函數 ===
+      function compressImage(file, callback) {
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var img = new Image();
+          img.onload = function() {
+            var canvas = document.createElement('canvas');
+            var maxLen = 800;
+            var width = img.width;
+            var height = img.height;
+            
+            if (width > maxLen || height > maxLen) {
+              if (width > height) {
+                height = Math.round((height * maxLen) / width);
+                width = maxLen;
+              } else {
+                width = Math.round((width * maxLen) / height);
+                height = maxLen;
+              }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            var compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+            callback(compressedBase64);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      window.handleDayPhotoUpload = function(input) {
+        if (input.files && input.files[0]) {
+          compressImage(input.files[0], function(base64) {
+            tempUploadedPhoto = base64;
+            document.getElementById('photoPreviewImg').src = base64;
+            document.getElementById('photoResetBtn').style.display = 'block';
+          });
+        }
+      };
+      
+      window.resetDayPhoto = function() {
+        tempUploadedPhoto = null;
+        var field = currentField;
+        document.getElementById('photoPreviewImg').src = originalDayPhotos[field] || 'assets/scene-jeju-coast.png';
+        document.getElementById('photoResetBtn').style.display = 'none';
+      };
+
+      window.handleFoodSelectChange = function(select) {
+        var thumb = select.parentElement.parentElement.parentElement.querySelector('.food-edit-thumb');
+        if (select.value === 'upload') {
+          select.nextElementSibling.click();
+        } else if (select.value && select.value !== 'upload') {
+          if (thumb) thumb.src = select.value;
+        }
+      };
+      
+      window.handleFoodPhotoUpload = function(input) {
+        if (input.files && input.files[0]) {
+          var select = input.previousElementSibling;
+          var thumb = input.parentElement.parentElement.parentElement.querySelector('.food-edit-thumb');
+          compressImage(input.files[0], function(base64) {
+            var customOption = Array.from(select.options).find(function(opt) {
+              return opt.text === '📷 已上傳自訂圖片';
+            });
+            
+            if (customOption) {
+              customOption.value = base64;
+              customOption.selected = true;
+            } else {
+              var opt = document.createElement('option');
+              opt.value = base64;
+              opt.text = '📷 已上傳自訂圖片';
+              opt.selected = true;
+              select.insertBefore(opt, select.options[select.options.length - 1]);
+            }
+            
+            if (thumb) thumb.src = base64;
+          });
+        }
+      };
+
       // === 工具函數 ===
       function getSavedEdits() {
         try {
@@ -1142,6 +1307,12 @@
           var metaEl = el.querySelector('.day-head .meta');
           if (metaEl) {
             metaEl.innerHTML = escapeHtml(value.date) + '<br/>' + escapeHtml(value.title);
+          }
+
+          // 更新主圖
+          var imgEl = el.querySelector('.day-photo');
+          if (imgEl) {
+            imgEl.src = value.photo || originalDayPhotos[field] || 'assets/scene-jeju-coast.png';
           }
 
           // 2. 更新 day-body
@@ -1396,8 +1567,55 @@
             '<label>車程資訊 (Drive)</label>' +
             '<input type="text" id="editDayDrive" value="' + escapeHtml(dayData.drive || '') + '" placeholder="例如: 30分/20km · 15分/10km" />' +
           '</div>';
+
+          // 圖片上傳資訊
+          tempUploadedPhoto = dayData.photo || null;
+          var currentPhotoSrc = tempUploadedPhoto || originalDayPhotos[field] || 'assets/scene-jeju-coast.png';
+          
+          html += '<div class="edit-field" style="margin-top:16px;">' +
+            '<label>卡片主圖片</label>' +
+            '<div id="photoPreviewContainer" class="image-upload-preview">' +
+              '<img id="photoPreviewImg" src="' + currentPhotoSrc + '" />' +
+              '<div class="image-upload-actions">' +
+                '<button type="button" class="primary" onclick="document.getElementById(\'dayPhotoFileInput\').click()">📷 上傳圖片</button>' +
+                '<button type="button" id="photoResetBtn" class="danger" style="display:' + (tempUploadedPhoto ? 'block' : 'none') + ';" onclick="resetDayPhoto()">❌ 還原預設圖</button>' +
+              '</div>' +
+            '</div>' +
+            '<div id="photoDragArea" class="image-upload-area" onclick="document.getElementById(\'dayPhotoFileInput\').click()">' +
+              '<div style="font-size: 24px; opacity:0.6;">📥</div>' +
+              '<div style="font-size:12px; font-weight:bold; color:var(--muted);">點擊或拖曳圖片到此處上傳</div>' +
+              '<div style="font-size:10px; color:#aaa;">(支援 JPG/PNG，將自動在前端進行高清品質壓縮)</div>' +
+            '</div>' +
+            '<input type="file" id="dayPhotoFileInput" accept="image/*" style="display:none;" onchange="handleDayPhotoUpload(this)" />' +
+          '</div>';
           
           body.innerHTML = html;
+
+          // 綁定拖曳上傳事件
+          setTimeout(function() {
+            var dragArea = document.getElementById('photoDragArea');
+            if (dragArea) {
+              dragArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dragArea.classList.add('drag-over');
+              });
+              dragArea.addEventListener('dragleave', function(e) {
+                dragArea.classList.remove('drag-over');
+              });
+              dragArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dragArea.classList.remove('drag-over');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  var file = e.dataTransfer.files[0];
+                  compressImage(file, function(base64) {
+                    tempUploadedPhoto = base64;
+                    document.getElementById('photoPreviewImg').src = base64;
+                    document.getElementById('photoResetBtn').style.display = 'block';
+                  });
+                }
+              });
+            }
+          }, 50);
           
           // 顯示 modal
           overlay.style.display = 'flex';
@@ -1478,17 +1696,27 @@
             var items = Array.isArray(current) ? current : [];
             var html = '<div id="editFoodContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:12px;">';
             items.forEach(function(item) {
-              html += '<div class="edit-food-item" style="display:flex; gap:8px; align-items:center;">' +
-                '<input type="text" placeholder="美食名稱" value="' + escapeHtml(item.name) + '" style="flex:2;" />' +
-                '<select style="flex:2; padding:10px; border:2px solid #ecd9c8; border-radius:12px; font-family:inherit; background:#fffbf7;">' +
-                  '<option value="assets/food-black-pork.png"' + (item.img === 'assets/food-black-pork.png' ? ' selected' : '') + '>黑豬肉燒肉圖</option>' +
-                  '<option value="assets/food-abalone.png"' + (item.img === 'assets/food-abalone.png' ? ' selected' : '') + '>鮑魚粥圖</option>' +
-                  '<option value="assets/food-garlic-bread.png"' + (item.img === 'assets/food-garlic-bread.png' ? ' selected' : '') + '>大蒜麵包圖</option>' +
-                  '<option value="assets/hallabong-mascot.png"' + (item.img === 'assets/hallabong-mascot.png' ? ' selected' : '') + '>濟州柑橘圖</option>' +
-                  '<option value="assets/scene-jeju-coast.png"' + (item.img === 'assets/scene-jeju-coast.png' ? ' selected' : '') + '>帶魚海鮮圖</option>' +
-                  '<option value="assets/scene-snoopy.png"' + (item.img === 'assets/scene-snoopy.png' ? ' selected' : '') + '>史努比花園圖</option>' +
-                '</select>' +
-                '<button class="remove-item" onclick="this.parentElement.remove()" style="width:32px; height:32px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>' +
+              var isCustomImg = item.img && item.img.indexOf('data:image/') === 0;
+              html += '<div class="edit-food-item" style="display:flex; gap:8px; align-items:center; background:#faf6f2; padding:8px; border-radius:12px; border:1px solid #f2e3d5;">' +
+                '<img src="' + item.img + '" style="width:40px; height:40px; object-fit:cover; border-radius:8px; border:1px solid #ecd9c8;" class="food-edit-thumb" />' +
+                '<div style="display:flex; flex-direction:column; flex:1; gap:4px;">' +
+                  '<input type="text" placeholder="美食名稱" value="' + escapeHtml(item.name) + '" style="padding:6px 10px; font-size:12px;" />' +
+                  '<div style="display:flex; gap:6px; align-items:center;">' +
+                    '<select onchange="handleFoodSelectChange(this)" style="flex:1; padding:6px; border:2px solid #ecd9c8; border-radius:8px; font-family:inherit; font-size:11px; background:#fff;">' +
+                      '<option value="assets/food-black-pork.png"' + (item.img === 'assets/food-black-pork.png' ? ' selected' : '') + '>黑豬肉燒肉圖</option>' +
+                      '<option value="assets/food-abalone.png"' + (item.img === 'assets/food-abalone.png' ? ' selected' : '') + '>鮑魚粥圖</option>' +
+                      '<option value="assets/food-garlic-bread.png"' + (item.img === 'assets/food-garlic-bread.png' ? ' selected' : '') + '>大蒜麵包圖</option>' +
+                      '<option value="assets/hallabong-mascot.png"' + (item.img === 'assets/hallabong-mascot.png' ? ' selected' : '') + '>濟州柑橘圖</option>' +
+                      '<option value="assets/scene-jeju-coast.png"' + (item.img === 'assets/scene-jeju-coast.png' ? ' selected' : '') + '>帶魚海鮮圖</option>' +
+                      '<option value="assets/scene-snoopy.png"' + (item.img === 'assets/scene-snoopy.png' ? ' selected' : '') + '>史努比花園圖</option>' +
+                      (isCustomImg ? '<option value="' + escapeHtml(item.img) + '" selected>📷 已上傳自訂圖片</option>' : '') +
+                      '<option value="upload">📷 上傳自訂圖片...</option>' +
+                    '</select>' +
+                    '<input type="file" accept="image/*" style="display:none;" onchange="handleFoodPhotoUpload(this)" />' +
+                    '<button type="button" onclick="this.previousElementSibling.click()" style="padding:4px 8px; font-size:11px; border-radius:6px; cursor:pointer; background:#fff; border:1px solid #ecd9c8;">📷 上傳</button>' +
+                  '</div>' +
+                '</div>' +
+                '<button class="remove-item" onclick="this.parentElement.remove()" style="width:28px; height:28px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer; font-size:16px;">×</button>' +
                 '</div>';
             });
             html += '</div>' +
@@ -1611,7 +1839,8 @@
             title: title,
             tags: tags,
             slots: slots,
-            drive: drive
+            drive: drive,
+            photo: tempUploadedPhoto
           };
         } else {
           switch(currentField) {
@@ -1697,17 +1926,25 @@
         var container = document.getElementById('editFoodContainer');
         var div = document.createElement('div');
         div.className = 'edit-food-item';
-        div.style.cssText = 'display:flex; gap:8px; align-items:center;';
-        div.innerHTML = '<input type="text" placeholder="美食名稱" value="" style="flex:2;" />' +
-          '<select style="flex:2; padding:10px; border:2px solid #ecd9c8; border-radius:12px; font-family:inherit; background:#fffbf7;">' +
-            '<option value="assets/food-black-pork.png">黑豬肉燒肉圖</option>' +
-            '<option value="assets/food-abalone.png">鮑魚粥圖</option>' +
-            '<option value="assets/food-garlic-bread.png">大蒜麵包圖</option>' +
-            '<option value="assets/hallabong-mascot.png">濟州柑橘圖</option>' +
-            '<option value="assets/scene-jeju-coast.png">帶魚海鮮圖</option>' +
-            '<option value="assets/scene-snoopy.png">史努比花園圖</option>' +
-          '</select>' +
-          '<button class="remove-item" onclick="this.parentElement.remove()" style="width:32px; height:32px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>';
+        div.style.cssText = 'display:flex; gap:8px; align-items:center; background:#faf6f2; padding:8px; border-radius:12px; border:1px solid #f2e3d5;';
+        div.innerHTML = '<img src="assets/food-black-pork.png" style="width:40px; height:40px; object-fit:cover; border-radius:8px; border:1px solid #ecd9c8;" class="food-edit-thumb" />' +
+          '<div style="display:flex; flex-direction:column; flex:1; gap:4px;">' +
+            '<input type="text" placeholder="美食名稱" value="" style="padding:6px 10px; font-size:12px;" />' +
+            '<div style="display:flex; gap:6px; align-items:center;">' +
+              '<select onchange="handleFoodSelectChange(this)" style="flex:1; padding:6px; border:2px solid #ecd9c8; border-radius:8px; font-family:inherit; font-size:11px; background:#fff;">' +
+                '<option value="assets/food-black-pork.png">黑豬肉燒肉圖</option>' +
+                '<option value="assets/food-abalone.png">鮑魚粥圖</option>' +
+                '<option value="assets/food-garlic-bread.png">大蒜麵包圖</option>' +
+                '<option value="assets/hallabong-mascot.png">濟州柑橘圖</option>' +
+                '<option value="assets/scene-jeju-coast.png">帶魚海鮮圖</option>' +
+                '<option value="assets/scene-snoopy.png">史努比花園圖</option>' +
+                '<option value="upload">📷 上傳自訂圖片...</option>' +
+              '</select>' +
+              '<input type="file" accept="image/*" style="display:none;" onchange="handleFoodPhotoUpload(this)" />' +
+              '<button type="button" onclick="this.previousElementSibling.click()" style="padding:4px 8px; font-size:11px; border-radius:6px; cursor:pointer; background:#fff; border:1px solid #ecd9c8;">📷 上傳</button>' +
+            '</div>' +
+          '</div>' +
+          '<button class="remove-item" onclick="this.parentElement.remove()" style="width:28px; height:28px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer; font-size:16px;">×</button>';
         container.appendChild(div);
         div.querySelector('input').focus();
       };
