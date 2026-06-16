@@ -1002,13 +1002,194 @@
     @media print {
       .map-controls, #map { display: none !important; }
     }
+
+    /* ====== 🎨 v2.4 UI 美化與優化 ====== */
+
+    /* 1. Scroll-driven 入場動畫 */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media print {
+      .reveal { opacity: 1 !important; transform: none !important; }
+    }
+
+    /* 2. Hero stagger 入場動畫 */
+    @keyframes heroFadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero h1 {
+      animation: heroFadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
+    .hero .subtitle {
+      animation: heroFadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+    }
+    .hero .countdown-container {
+      animation: heroFadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+    }
+    .hero .flight-box {
+      animation: heroFadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+    }
+    @keyframes heroBorderShimmer {
+      0%, 100% { border-color: #eddac8; }
+      50% { border-color: #d4b896; }
+    }
+    .flight-box {
+      animation: heroBorderShimmer 4s ease-in-out infinite, heroFadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+    }
+
+    /* 吉祥物持續浮動呼吸動畫 */
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-6px) rotate(1.5deg); }
+      66% { transform: translateY(-3px) rotate(-1deg); }
+    }
+    .hero-deco.right {
+      animation: mascotFloat 4s ease-in-out infinite;
+    }
+    .closing img {
+      animation: mascotFloat 3.5s ease-in-out infinite;
+    }
+    @media print {
+      .hero h1, .hero .subtitle, .hero .countdown-container, .hero .flight-box, .flight-box { animation: none !important; }
+      .hero-deco.right, .closing img { animation: none !important; }
+    }
+
+    /* 3. Day Card slot-label pill 化 + 間距優化 */
+    .slot-label {
+      background: rgba(232, 93, 74, 0.06);
+      padding: 4px 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      letter-spacing: 0.03em;
+    }
+    .slot { margin-bottom: 14px; }
+    .slot ul { margin-top: 4px; }
+    .day-body { padding: 18px 20px 20px; }
+    .tag {
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .tag:hover {
+      transform: scale(1.08);
+    }
+    .drive {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    /* 4. 側邊欄 dot 漸層背景 */
+    .dot[style*="--d1"] { background: var(--d1-grad) !important; }
+    .dot[style*="--d2"] { background: var(--d2-grad) !important; }
+    .dot[style*="--d3"] { background: var(--d3-grad) !important; }
+    .dot[style*="--d4"] { background: var(--d4-grad) !important; }
+    .dot[style*="--d5"] { background: var(--d5-grad) !important; }
+    .dot[style*="--d6"] { background: var(--d6-grad) !important; }
+    .dot[style*="--d7"] { background: var(--d7-grad) !important; }
+    .dot[style*="--d8"] { background: var(--d8-grad) !important; }
+
+    /* 側邊欄卡片之間裝飾點線 */
+    .sidebar .side-card + .side-card {
+      position: relative;
+    }
+    .sidebar .side-card + .side-card::before {
+      content: "· · · · · · · · · · · ·";
+      display: block;
+      text-align: center;
+      color: #e0d5c8;
+      font-size: 12px;
+      letter-spacing: 4px;
+      padding: 4px 0;
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .sidebar { gap: 20px; }
+
+    /* side-head 小圖示裝飾 */
+    .side-head.purple::before {
+      content: "📋 ";
+      font-size: 13px;
+    }
+    .side-head.orange::before {
+      content: "";
+    }
+    #weatherCard .side-head::before { content: ""; }
+    #restaurantCard .side-head::before { content: ""; }
+
+    /* 5. Toolbar 群組分隔線 + 圖示強化 */
+    .toolbar .toolbar-separator {
+      width: 1px;
+      height: 24px;
+      background: linear-gradient(180deg, transparent, #e0d5c8, transparent);
+      align-self: center;
+      flex-shrink: 0;
+    }
+    @media (max-width: 720px) {
+      .toolbar .toolbar-separator { display: none; }
+    }
+
+    /* 6. 美食區響應式欄數 */
+    .food-row {
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+    .food-item img {
+      margin-bottom: 10px;
+    }
+    .food-item span {
+      line-height: 1.35;
+    }
+
+    /* 7. 全域微互動 — 按壓反饋 */
+    .toolbar button:active,
+    .map-btn:active,
+    .noti-btn:active,
+    .edit-actions button:active,
+    .save-btn:active,
+    .cancel-btn:active {
+      transform: scale(0.96) !important;
+      transition-duration: 0.08s !important;
+    }
+
+    /* Toolbar 滾動加深陰影 */
+    .toolbar.scrolled {
+      box-shadow: 0 4px 20px rgba(120, 100, 80, 0.1), 0 1px 4px rgba(120, 100, 80, 0.06);
+      border-bottom-color: #e8d5c0;
+    }
+
+    /* 版本 badge 淡入 */
+    .version-badge {
+      animation: heroFadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+    }
+    @media print {
+      .version-badge { animation: none !important; }
+      .toolbar.scrolled { box-shadow: none !important; }
+    }
+
+    /* Day Card 序號延遲入場 */
+    .days-grid .day-card:nth-child(1).reveal { transition-delay: 0s; }
+    .days-grid .day-card:nth-child(2).reveal { transition-delay: 0.06s; }
+    .days-grid .day-card:nth-child(3).reveal { transition-delay: 0.12s; }
+    .days-grid .day-card:nth-child(4).reveal { transition-delay: 0.18s; }
+    .days-grid .day-card:nth-child(5).reveal { transition-delay: 0.24s; }
+    .days-grid .day-card:nth-child(6).reveal { transition-delay: 0.3s; }
+    .days-grid .day-card:nth-child(7).reveal { transition-delay: 0.36s; }
+    .days-grid .day-card:nth-child(8).reveal { transition-delay: 0.42s; }
   </style>
 </head>
 <body>
   <div class="toolbar no-print">
-    <button onclick="window.print()">列印 / 存成 PDF</button>
+    <button onclick="window.print()">🖨️ 列印 / 存成 PDF</button>
     <button class="secondary" onclick="syncToGitHub()">☁️ 同步到 GitHub</button>
     <button class="secondary share-btn" onclick="shareItineraryLink()">🔗 分享行程</button>
+    <div class="toolbar-separator"></div>
     
     <div class="dropdown" id="manageDropdown">
       <button class="secondary" onclick="toggleDropdown(event)">⚙️ 管理與備份</button>
@@ -3497,6 +3678,54 @@
       document.querySelectorAll('[data-editable]').forEach(function(el) {
         el.onclick = function() {};
       });
+
+      // ====== v2.4 UI 美化：Scroll-driven 入場動畫 ======
+      (function initRevealAnimations() {
+        // 為所有需要動畫的元素加上 .reveal class
+        var selectors = '.day-card, .side-card, .food-row, .info-card, .closing, .section-title, .points-grid';
+        document.querySelectorAll(selectors).forEach(function(el) {
+          el.classList.add('reveal');
+        });
+
+        // IntersectionObserver 驅動入場
+        if ('IntersectionObserver' in window) {
+          var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target); // 只觸發一次
+              }
+            });
+          }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+          document.querySelectorAll('.reveal').forEach(function(el) {
+            observer.observe(el);
+          });
+        } else {
+          // Fallback：直接顯示
+          document.querySelectorAll('.reveal').forEach(function(el) {
+            el.classList.add('visible');
+          });
+        }
+      })();
+
+      // ====== v2.4 Toolbar 滾動加深陰影 ======
+      (function initToolbarScroll() {
+        var toolbar = document.querySelector('.toolbar');
+        if (!toolbar) return;
+        var lastScrollY = 0;
+        function onScroll() {
+          var y = window.pageYOffset || document.documentElement.scrollTop;
+          if (y > 30 && lastScrollY <= 30) {
+            toolbar.classList.add('scrolled');
+          } else if (y <= 30 && lastScrollY > 30) {
+            toolbar.classList.remove('scrolled');
+          }
+          lastScrollY = y;
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+      })();
 
     })();
   </script>
