@@ -437,7 +437,7 @@
     .edit-overlay.show { display: flex; opacity: 1; }
     .edit-modal {
       background: #fff; border-radius: 24px; padding: 32px;
-      width: 520px; max-width: 92vw; max-height: 85vh; overflow-y: auto;
+      width: 640px; max-width: 92vw; max-height: 85vh; overflow-y: auto;
       box-shadow: 0 24px 48px rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.08);
       transform: translateY(20px) scale(0.97);
       transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -545,7 +545,7 @@
     <div class="main-grid">
       <div class="days-grid">
 
-        <article class="day-card">
+        <article class="day-card" data-editable="day1">
           <div class="day-head" style="background:var(--d1)">
             <span class="num">DAY 1</span>
             <span class="meta">7/4（六）<br/>抵達・租車・熟成到</span>
@@ -564,7 +564,7 @@
           </div>
         </article>
 
-        <article class="day-card">
+        <article class="day-card" data-editable="day2">
           <div class="day-head" style="background:var(--d2)">
             <span class="num">DAY 2</span>
             <span class="meta">7/5（日）<br/>史努比・城邑民俗村</span>
@@ -583,7 +583,7 @@
           </div>
         </article>
 
-        <article class="day-card">
+        <article class="day-card" data-editable="day3">
           <div class="day-head" style="background:var(--d3)">
             <span class="num">DAY 3</span>
             <span class="meta">7/6（一）<br/>9.81 Park・神話主題公園</span>
@@ -600,7 +600,7 @@
           </div>
         </article>
 
-        <article class="day-card">
+        <article class="day-card" data-editable="day4">
           <div class="day-head" style="background:var(--d4)">
             <span class="num">DAY 4</span>
             <span class="meta">7/7（二）<br/>牛島・城山日出峰</span>
@@ -620,7 +620,7 @@
           </div>
         </article>
 
-        <article class="day-card">
+        <article class="day-card" data-editable="day5">
           <div class="day-head" style="background:var(--d5)">
             <span class="num">DAY 5</span>
             <span class="meta">7/8（三）<br/>繞島・山房山・偶來市場</span>
@@ -638,7 +638,7 @@
           </div>
         </article>
 
-        <article class="day-card">
+        <article class="day-card" data-editable="day6">
           <div class="day-head" style="background:var(--d6)">
             <span class="num">DAY 6</span>
             <span class="meta">7/9（四）<br/>蓮洞商圈・亂打秀</span>
@@ -653,7 +653,7 @@
           </div>
         </article>
 
-        <article class="day-card">
+        <article class="day-card" data-editable="day7">
           <div class="day-head" style="background:var(--d7)">
             <span class="num">DAY 7</span>
             <span class="meta">7/10（五）<br/>咸德海灘・落火祭</span>
@@ -670,7 +670,7 @@
           </div>
         </article>
 
-        <article class="day-card">
+        <article class="day-card" data-editable="day8">
           <div class="day-head" style="background:var(--d8)">
             <span class="num">DAY 8</span>
             <span class="meta">7/11（六）<br/>環島・還車返程</span>
@@ -839,7 +839,106 @@
           '大蒜麵包 Day 4/7',
           '亂打秀 Day 6/8'
         ],
-        closing: '一起出發去濟州島吧！'
+        closing: '一起出發去濟州島吧！',
+        day1: {
+          date: '7/4（六）',
+          title: '抵達・租車・熟成到',
+          tags: [
+            { text: '已預約晚餐', type: '' }
+          ],
+          slots: [
+            { label: '上午', items: ['10:40 機場接送', '11:40 桃園 T1・德威 TW688', '14:25 起飛 — 17:30 抵達（2h05m）'] },
+            { label: '傍晚', items: ['18:30 租車', '19:30 VENTIMO Check-in'] },
+            { label: '晚餐', items: ['20:30 熟成到（已預約）', '車程 5 分 / 1.7km'] }
+          ],
+          drive: ''
+        },
+        day2: {
+          date: '7/5（日）',
+          title: '史努比・城邑民俗村',
+          tags: [],
+          slots: [
+            { label: '上午', items: ['09:00 出發 → 10:00 史努比花園（9:00–19:00）'] },
+            { label: '午餐', items: ['園內用餐'] },
+            { label: '下午', items: ['14:00 離開 → 14:30 城邑民俗村', '免費中文導覽約 40 分', '16:00 回飯店'] },
+            { label: '晚上', items: ['超市採買'] }
+          ],
+          drive: '40分/30km · 20分/13km · 50分/35km'
+        },
+        day3: {
+          date: '7/6（一）',
+          title: '9.81 Park・神話主題公園',
+          tags: [],
+          slots: [
+            { label: '上午', items: ['09:00 出發 → 09:30 9.81 Park', '11:30 離開'] },
+            { label: '午餐', items: ['12:00 神話主題公園商業街'] },
+            { label: '下午', items: ['17:00 離開 → 18:00 回飯店'] }
+          ],
+          drive: '21分/18km · 13分/13km · 35分/29km'
+        },
+        day4: {
+          date: '7/7（二）',
+          title: '牛島・城山日出峰',
+          tags: [
+            { text: '帶護照', type: 'green' },
+            { text: '暈船藥', type: '' }
+          ],
+          slots: [
+            { label: '上午', items: ['08:30 出發（1h/46km）', '買船票・填表・船行 15 分', '10:00 前到牛島租車'] },
+            { label: '午餐', items: ['Pungwon 風園漢拏山炒飯', '黑豬肉主菜後炒成飯'] },
+            { label: '下午', items: ['14:00 離開牛島 → 城山日出峰', '15:30 回飯店（1h10m）'] },
+            { label: '晚上', items: ['超市購物・晚餐'] }
+          ],
+          drive: ''
+        },
+        day5: {
+          date: '7/8（三）',
+          title: '繞島・山房山・偶來市場',
+          tags: [
+            { text: '滿足商會（帶魚）', type: 'blue' },
+            { text: 'Bon 本豬', type: 'blue' }
+          ],
+          slots: [
+            { label: '上午', items: ['09:00 出發 → 11:30 前 山房山樂園', '13:30 離開'] },
+            { label: '下午', items: ['14:30 西歸浦偶來市場', '15:30 離開 → 17:00 回飯店'] }
+          ],
+          drive: '50分/37km · 45分/27km · 1h10/43km'
+        },
+        day6: {
+          date: '7/9（四）',
+          title: '蓮洞商圈・亂打秀',
+          tags: [],
+          slots: [
+            { label: '白天', items: ['東門市場（8號出口近夜市）', '七星購物街・中央地下街', 'AKKOMI（9、10 出口）可試吃、會中文', '推薦：橘子乾、巧克力片'] },
+            { label: '晚上', items: ['亂打秀（可安排）'] }
+          ],
+          drive: ''
+        },
+        day7: {
+          date: '7/10（五）',
+          title: '咸德海灘・落火祭',
+          tags: [
+            { text: 'Flowave 已預約', type: '' },
+            { text: '已付 5 萬韓元', type: 'green' }
+          ],
+          slots: [
+            { label: '白天', items: ['10:00 出發・咸德海灘咖啡廳巡禮', '大蒜麵包・倫敦貝果博物館', '15:00 回飯店休息 2h'] },
+            { label: '晚上', items: ['18:00 咖啡廳晚餐 / Flowave 落火祭'] }
+          ],
+          drive: ''
+        },
+        day8: {
+          date: '7/11（六）',
+          title: '環島・還車返程',
+          tags: [
+            { text: '亂打秀可排', type: 'blue' }
+          ],
+          slots: [
+            { label: '上午', items: ['環島晃晃・11:00 退房'] },
+            { label: '傍晚', items: ['19:00 加油 → 20:00 機場還車', 'LJ763 22:15 起飛 → 00:15 抵達 T1'] }
+          ],
+          drive: ''
+        }
       };
 
       var fieldLabels = {
@@ -850,7 +949,15 @@
         'tax-refund': '機場退稅資訊',
         ventimo: 'VENTIMO 附近採買',
         highlights: '行程小重點',
-        closing: '結尾訊息'
+        closing: '結尾訊息',
+        day1: 'DAY 1 行程',
+        day2: 'DAY 2 行程',
+        day3: 'DAY 3 行程',
+        day4: 'DAY 4 行程',
+        day5: 'DAY 5 行程',
+        day6: 'DAY 6 行程',
+        day7: 'DAY 7 行程',
+        day8: 'DAY 8 行程'
       };
 
       // === 工具函數 ===
@@ -886,6 +993,88 @@
       function applyFieldEdit(field, value) {
         var el = document.querySelector('[data-editable="' + field + '"]');
         if (!el) return;
+
+        if (/^day\d+$/.test(field)) {
+          // 1. 更新 day-head
+          var metaEl = el.querySelector('.day-head .meta');
+          if (metaEl) {
+            metaEl.innerHTML = escapeHtml(value.date) + '<br/>' + escapeHtml(value.title);
+          }
+
+          // 2. 更新 day-body
+          var bodyEl = el.querySelector('.day-body');
+          if (bodyEl) {
+            var contentDiv = bodyEl.querySelector(':scope > div');
+            if (contentDiv) {
+              contentDiv.innerHTML = ''; // 清空
+              
+              // 渲染 tags
+              if (value.tags && value.tags.length > 0) {
+                value.tags.forEach(function(tag) {
+                  var tagSpan = document.createElement('span');
+                  tagSpan.className = 'tag' + (tag.type ? ' ' + tag.type : '');
+                  tagSpan.textContent = tag.text;
+                  contentDiv.appendChild(tagSpan);
+                });
+              }
+              
+              // 渲染 slots
+              if (value.slots && value.slots.length > 0) {
+                value.slots.forEach(function(slot) {
+                  var slotDiv = document.createElement('div');
+                  slotDiv.className = 'slot';
+                  
+                  var labelDiv = document.createElement('div');
+                  labelDiv.className = 'slot-label';
+                  
+                  var svgHtml = '';
+                  if (slot.label === '上午') {
+                    svgHtml = '<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M2 16h20M5 16l2-10h10l2 10" stroke="#e85d4a" stroke-width="2"/></svg> ';
+                  } else if (slot.label === '傍晚') {
+                    svgHtml = '<svg class="icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="12" rx="2" stroke="#e85d4a" stroke-width="2"/><path d="M8 8V6a4 4 0 018 0v2" stroke="#e85d4a" stroke-width="2"/></svg> ';
+                  } else if (slot.label === '晚餐' || slot.label === '午餐') {
+                    svgHtml = '<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="M4 10h16v8H4z M8 10V7h8v3" stroke="#e85d4a" stroke-width="2"/></svg> ';
+                  }
+                  
+                  labelDiv.innerHTML = svgHtml + escapeHtml(slot.label);
+                  slotDiv.appendChild(labelDiv);
+                  
+                  var ul = document.createElement('ul');
+                  if (slot.items && slot.items.length > 0) {
+                    slot.items.forEach(function(item) {
+                      var li = document.createElement('li');
+                      li.textContent = item;
+                      ul.appendChild(li);
+                    });
+                  }
+                  slotDiv.appendChild(ul);
+                  contentDiv.appendChild(slotDiv);
+                });
+              }
+              
+              // 渲染 drive
+              if (value.drive) {
+                var driveDiv = document.createElement('div');
+                driveDiv.className = 'drive';
+                driveDiv.innerHTML = '<strong>車程</strong><br/>' + escapeHtml(value.drive);
+                contentDiv.appendChild(driveDiv);
+              }
+            }
+          }
+          
+          // 3. 更新側邊欄總覽
+          var dayNum = field.replace('day', '');
+          var overviewItems = document.querySelectorAll('.overview-item');
+          overviewItems.forEach(function(item) {
+            var dot = item.querySelector('.dot');
+            if (dot && dot.textContent.trim() === dayNum) {
+              item.innerHTML = '';
+              item.appendChild(dot);
+              item.appendChild(document.createTextNode(value.title));
+            }
+          });
+          return;
+        }
 
         switch(field) {
           case 'title':
@@ -971,6 +1160,94 @@
         var edits = getSavedEdits();
         var current = edits[field] || originalData[field];
 
+        if (/^day\d+$/.test(field)) {
+          var dayData = current;
+          var html = '';
+          
+          // 日期與標題
+          html += '<div style="display:flex; gap:12px; margin-bottom:16px;">' +
+            '<div class="edit-field" style="flex: 1;">' +
+              '<label>日期</label>' +
+              '<input type="text" id="editDayDate" value="' + escapeHtml(dayData.date) + '" />' +
+            '</div>' +
+            '<div class="edit-field" style="flex: 2;">' +
+              '<label>本日重點主題</label>' +
+              '<input type="text" id="editDayTitle" value="' + escapeHtml(dayData.title) + '" />' +
+            '</div>' +
+          '</div>';
+          
+          // 標籤編輯
+          html += '<div class="edit-field" style="margin-bottom:20px;">' +
+            '<label>標籤 (Tags)</label>' +
+            '<div id="editDayTagsContainer" style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;">';
+          (dayData.tags || []).forEach(function(tag) {
+            html += '<div class="edit-tag-item" style="display:flex; gap:8px; align-items:center;">' +
+              '<input type="text" placeholder="標籤文字" value="' + escapeHtml(tag.text) + '" style="flex:2;" />' +
+              '<select style="flex:1; padding:10px; border:2px solid #ecd9c8; border-radius:12px; font-family:inherit; background:#fffbf7;">' +
+                '<option value=""' + (tag.type === '' ? ' selected' : '') + '>預設顏色</option>' +
+                '<option value="green"' + (tag.type === 'green' ? ' selected' : '') + '>綠色</option>' +
+                '<option value="blue"' + (tag.type === 'blue' ? ' selected' : '') + '>藍色</option>' +
+              '</select>' +
+              '<button class="remove-item" onclick="this.parentElement.remove()" style="width:32px; height:32px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>' +
+            '</div>';
+          });
+          html += '</div>' +
+            '<button class="add-item-btn" type="button" onclick="addDayTagItem()" style="font-size:12px; padding:6px 12px; width:auto;">＋ 新增標籤</button>' +
+          '</div>';
+          
+          // 時段編輯
+          html += '<div class="edit-field">' +
+            '<label>行程時段 (Slots)</label>' +
+            '<div id="editDaySlotsContainer" style="display:flex; flex-direction:column; gap:16px; margin-bottom:12px;">';
+          
+          (dayData.slots || []).forEach(function(slot) {
+            html += '<div class="edit-slot-group" style="border: 1px solid #f2e3d5; padding: 14px; border-radius: 16px; background:#faf6f2; position:relative;">' +
+              '<button class="remove-item" onclick="this.parentElement.remove()" style="position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;" title="刪除時段">×</button>' +
+              '<div style="width:75%; margin-bottom:10px;">' +
+                '<label style="font-size:11px; color:var(--muted); font-weight:bold; margin-bottom:4px; display:block;">時段名稱</label>' +
+                '<input type="text" class="slot-label-input" value="' + escapeHtml(slot.label) + '" placeholder="例如: 上午, 下午, 晚餐..." style="padding:8px 12px; border-radius:8px;" />' +
+              '</div>' +
+              '<label style="font-size:11px; color:var(--muted); font-weight:bold; margin-bottom:4px; display:block;">時段內行程項目</label>' +
+              '<div class="slot-items-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:8px;">';
+              
+              (slot.items || []).forEach(function(item) {
+                html += '<div style="display:flex; gap:6px; align-items:center;">' +
+                  '<input type="text" class="slot-item-input" value="' + escapeHtml(item) + '" placeholder="行程內容..." style="padding:8px 12px; border-radius:8px; flex:1;" />' +
+                  '<button class="remove-item" onclick="this.parentElement.remove()" style="width:24px; height:24px; font-size:14px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>' +
+                '</div>';
+              });
+              
+              html += '</div>' +
+              '<button class="add-item-btn" type="button" onclick="addSlotActivityItem(this)" style="font-size:11px; padding:6px; border-radius:8px; color:#7b5ea7; border-color:#d5c3ea;">＋ 新增行程項目</button>' +
+            '</div>';
+          });
+          
+          html += '</div>' +
+            '<button class="add-item-btn" type="button" onclick="addDaySlotGroup()" style="border-color:#7b5ea7; color:#7b5ea7;">＋ 新增時段</button>' +
+          '</div>';
+          
+          // 車程資訊
+          html += '<div class="edit-field" style="margin-top:16px;">' +
+            '<label>車程資訊 (Drive)</label>' +
+            '<input type="text" id="editDayDrive" value="' + escapeHtml(dayData.drive || '') + '" placeholder="例如: 30分/20km · 15分/10km" />' +
+          '</div>';
+          
+          body.innerHTML = html;
+          
+          // 顯示 modal
+          overlay.style.display = 'flex';
+          requestAnimationFrame(function() {
+            overlay.classList.add('show');
+          });
+          
+          // 自動聚焦第一個 input
+          setTimeout(function() {
+            var firstInput = body.querySelector('input, textarea');
+            if (firstInput) firstInput.focus();
+          }, 100);
+          return;
+        }
+
         switch(field) {
           case 'title':
           case 'subtitle':
@@ -1004,7 +1281,7 @@
           case 'highlights':
             var items = Array.isArray(current) ? current : [];
             var listHtml = '<div id="editListContainer">';
-            items.forEach(function(item, i) {
+            items.forEach(function(item) {
               listHtml += '<div class="edit-list-item">' +
                 '<input type="text" value="' + escapeHtml(item) + '" />' +
                 '<button class="remove-item" onclick="removeListItem(this)" title="刪除">×</button>' +
@@ -1029,6 +1306,58 @@
         }, 100);
       }
 
+      window.addDayTagItem = function() {
+        var container = document.getElementById('editDayTagsContainer');
+        var div = document.createElement('div');
+        div.className = 'edit-tag-item';
+        div.style.display = 'flex';
+        div.style.gap = '8px';
+        div.style.alignItems = 'center';
+        div.innerHTML = '<input type="text" placeholder="標籤文字" value="" style="flex:2;" />' +
+          '<select style="flex:1; padding:10px; border:2px solid #ecd9c8; border-radius:12px; font-family:inherit; background:#fffbf7;">' +
+            '<option value="">預設顏色</option>' +
+            '<option value="green">綠色</option>' +
+            '<option value="blue">藍色</option>' +
+          '</select>' +
+          '<button class="remove-item" onclick="this.parentElement.remove()" style="width:32px; height:32px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>';
+        container.appendChild(div);
+        div.querySelector('input').focus();
+      };
+
+      window.addSlotActivityItem = function(btn) {
+        var container = btn.previousElementSibling;
+        var div = document.createElement('div');
+        div.style.display = 'flex';
+        div.style.gap = '6px';
+        div.style.alignItems = 'center';
+        div.innerHTML = '<input type="text" class="slot-item-input" value="" placeholder="行程內容..." style="padding:8px 12px; border-radius:8px; flex:1;" />' +
+          '<button class="remove-item" onclick="this.parentElement.remove()" style="width:24px; height:24px; font-size:14px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>';
+        container.appendChild(div);
+        div.querySelector('input').focus();
+      };
+
+      window.addDaySlotGroup = function() {
+        var container = document.getElementById('editDaySlotsContainer');
+        var div = document.createElement('div');
+        div.className = 'edit-slot-group';
+        div.style.cssText = 'border: 1px solid #f2e3d5; padding: 14px; border-radius: 16px; background:#faf6f2; position:relative;';
+        div.innerHTML = '<button class="remove-item" onclick="this.parentElement.remove()" style="position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;" title="刪除時段">×</button>' +
+          '<div style="width:75%; margin-bottom:10px;">' +
+            '<label style="font-size:11px; color:var(--muted); font-weight:bold; margin-bottom:4px; display:block;">時段名稱</label>' +
+            '<input type="text" class="slot-label-input" value="" placeholder="例如: 上午, 下午..." style="padding:8px 12px; border-radius:8px;" />' +
+          '</div>' +
+          '<label style="font-size:11px; color:var(--muted); font-weight:bold; margin-bottom:4px; display:block;">時段內行程項目</label>' +
+          '<div class="slot-items-container" style="display:flex; flex-direction:column; gap:6px; margin-bottom:8px;">' +
+            '<div style="display:flex; gap:6px; align-items:center;">' +
+              '<input type="text" class="slot-item-input" value="" placeholder="行程內容..." style="padding:8px 12px; border-radius:8px; flex:1;" />' +
+              '<button class="remove-item" onclick="this.parentElement.remove()" style="width:24px; height:24px; font-size:14px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>' +
+            '</div>' +
+          '</div>' +
+          '<button class="add-item-btn" type="button" onclick="addSlotActivityItem(this)" style="font-size:11px; padding:6px; border-radius:8px; color:#7b5ea7; border-color:#d5c3ea;">＋ 新增行程項目</button>';
+        container.appendChild(div);
+        div.querySelector('.slot-label-input').focus();
+      };
+
       window.closeModal = function() {
         var overlay = document.getElementById('editOverlay');
         overlay.classList.remove('show');
@@ -1043,35 +1372,74 @@
         var edits = getSavedEdits();
         var value;
 
-        switch(currentField) {
-          case 'title':
-          case 'subtitle':
-          case 'closing':
-            value = document.getElementById('editInput').value.trim();
-            break;
-          case 'flight':
-            value = {
-              depart: {
-                label: document.getElementById('editFlightDL').value.trim(),
-                time: document.getElementById('editFlightDT').value.trim()
-              },
-              return: {
-                label: document.getElementById('editFlightRL').value.trim(),
-                time: document.getElementById('editFlightRT').value.trim()
-              }
-            };
-            break;
-          case 'tips':
-          case 'tax-refund':
-          case 'ventimo':
-          case 'highlights':
-            var inputs = document.querySelectorAll('#editListContainer input');
-            value = [];
-            inputs.forEach(function(inp) {
-              var v = inp.value.trim();
-              if (v) value.push(v);
+        if (/^day\d+$/.test(currentField)) {
+          var date = document.getElementById('editDayDate').value.trim();
+          var title = document.getElementById('editDayTitle').value.trim();
+          var drive = document.getElementById('editDayDrive').value.trim();
+          
+          var tagElements = document.querySelectorAll('#editDayTagsContainer .edit-tag-item');
+          var tags = [];
+          tagElements.forEach(function(el) {
+            var text = el.querySelector('input').value.trim();
+            var type = el.querySelector('select').value;
+            if (text) {
+              tags.push({ text: text, type: type });
+            }
+          });
+          
+          var slotElements = document.querySelectorAll('#editDaySlotsContainer .edit-slot-group');
+          var slots = [];
+          slotElements.forEach(function(el) {
+            var label = el.querySelector('.slot-label-input').value.trim();
+            var itemInputs = el.querySelectorAll('.slot-items-container .slot-item-input');
+            var items = [];
+            itemInputs.forEach(function(inp) {
+              var itemVal = inp.value.trim();
+              if (itemVal) items.push(itemVal);
             });
-            break;
+            if (label || items.length > 0) {
+              slots.push({ label: label, items: items });
+            }
+          });
+          
+          value = {
+            date: date,
+            title: title,
+            tags: tags,
+            slots: slots,
+            drive: drive
+          };
+        } else {
+          switch(currentField) {
+            case 'title':
+            case 'subtitle':
+            case 'closing':
+              value = document.getElementById('editInput').value.trim();
+              break;
+            case 'flight':
+              value = {
+                depart: {
+                  label: document.getElementById('editFlightDL').value.trim(),
+                  time: document.getElementById('editFlightDT').value.trim()
+                },
+                return: {
+                  label: document.getElementById('editFlightRL').value.trim(),
+                  time: document.getElementById('editFlightRT').value.trim()
+                }
+              };
+              break;
+            case 'tips':
+            case 'tax-refund':
+            case 'ventimo':
+            case 'highlights':
+              var inputs = document.querySelectorAll('#editListContainer input');
+              value = [];
+              inputs.forEach(function(inp) {
+                var v = inp.value.trim();
+                if (v) value.push(v);
+              });
+              break;
+          }
         }
 
         if (value !== undefined) {

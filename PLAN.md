@@ -21,15 +21,16 @@
   - ✅ 「🔄 重置」按鈕（僅在有編輯時顯示，含確認對話框）
   - ✅ 清單類型支持新增/刪除項目
   - ✅ ESC 鍵 / 點擊遮罩關閉 Modal
-  - ✅ 可編輯內容（8 個區域）：
-    - 主標題（`data-editable="title"`）
-    - 副標題（`data-editable="subtitle"`）
-    - 航班資訊 - 去程/回程（`data-editable="flight"`）
-    - 小提醒列表 - 5 項（`data-editable="tips"`）
-    - 機場退稅資訊 - 3 項（`data-editable="tax-refund"`）
-    - VENTIMO 附近採買 - 3 項（`data-editable="ventimo"`）
-    - 行程小重點 - 6 項（`data-editable="highlights"`）
-    - 結尾訊息（`data-editable="closing"`）
+    - 可編輯內容：
+      - 主標題（`data-editable="title"`）
+      - 副標題（`data-editable="subtitle"`）
+      - 航班資訊 - 去程/回程（`data-editable="flight"`）
+      - 小提醒列表（`data-editable="tips"`）
+      - 機場退稅資訊（`data-editable="tax-refund"`）
+      - VENTIMO 附近採買（`data-editable="ventimo"`）
+      - 行程小重點（`data-editable="highlights"`）
+      - 結尾訊息（`data-editable="closing"`）
+      - 每日行程卡片 - 共 8 天（`data-editable="day1"` 至 `day8`，支援編輯日期、每日主題、客製化標籤、行程時段及今日車程，標題修改後自動同步至側邊欄總覽）
 
 ---
 
@@ -497,5 +498,5 @@ hotfix/緊急修復       - 緊急修復
 ---
 
 **最後更新**: 2026/06/16  
-**版本**: v1.1 - 可編輯行程功能已實作  
+**版本**: v1.2 - 每日行程卡片編輯與側邊欄同步功能已完成並完善  
 **狀態**: 🟡 第一階段核心功能開發中
