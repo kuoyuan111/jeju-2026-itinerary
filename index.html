@@ -521,6 +521,7 @@
     <button class="secondary" onclick="exportItineraryData()">📤 匯出行程檔</button>
     <button class="secondary" onclick="triggerImportData()">📥 匯入行程檔</button>
     <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importItineraryData(event)" />
+    <button class="secondary" onclick="syncToGitHub()">☁️ 同步到 GitHub</button>
     <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()">✏️ 編輯模式<span class="edit-dot"></span></button>
     <button class="secondary reset-btn" id="resetBtn" onclick="resetEdits()">🔄 重置</button>
   </div>
@@ -961,7 +962,8 @@
         day5: 'DAY 5 行程',
         day6: 'DAY 6 行程',
         day7: 'DAY 7 行程',
-        day8: 'DAY 8 行程'
+        day8: 'DAY 8 行程',
+        'github-token': 'GitHub 存取 Token'
       };
 
       // === 工具函數 ===
@@ -1250,9 +1252,25 @@
             if (firstInput) firstInput.focus();
           }, 100);
           return;
+        var edits = getSavedEdits();
+        var current;
+        if (field === 'github-token') {
+          current = localStorage.getItem('jeju-github-token') || '';
+        } else {
+          current = edits[field] || originalData[field];
         }
 
         switch(field) {
+          case 'github-token':
+            body.innerHTML = '<div class="edit-field">' +
+              '<label>GitHub Personal Access Token (PAT)</label>' +
+              '<input type="password" id="editTokenInput" placeholder="請貼上您的 ghp_ 開頭 Token..." value="' + escapeHtml(current || '') + '" />' +
+              '<div style="font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.4;">' +
+                '請填入具備此 repository 寫入權限 (Contents: Read and Write) 的 Fine-grained Token 或 Classic Token。<br/>' +
+                '此 Token 僅保存在您本機的瀏覽器中，不會傳送給任何第三方。' +
+              '</div>' +
+              '</div>';
+            break;
           case 'title':
           case 'subtitle':
           case 'closing':
@@ -1420,6 +1438,19 @@
             case 'closing':
               value = document.getElementById('editInput').value.trim();
               break;
+            case 'github-token':
+              var val = document.getElementById('editTokenInput').value.trim();
+              if (val) {
+                localStorage.setItem('jeju-github-token', val);
+                alert('Token 已儲存於本機瀏覽器。即將為您同步到 GitHub...');
+                setTimeout(function() {
+                  performGitHubSync(val);
+                }, 300);
+              } else {
+                localStorage.removeItem('jeju-github-token');
+                alert('Token 已從本機清除。');
+              }
+              break;
             case 'flight':
               value = {
                 depart: {
@@ -1539,8 +1570,120 @@
         if (e.target === this) closeModal();
       });
 
+      window.syncToGitHub = function() {
+        var token = localStorage.getItem('jeju-github-token');
+        if (!token) {
+          showGitHubTokenModal();
+          return;
+        }
+        performGitHubSync(token);
+      };
+
+      function showGitHubTokenModal() {
+        openModal('github-token');
+      }
+
+      function performGitHubSync(token) {
+        var edits = localStorage.getItem('jeju-itinerary-edits') || '{}';
+        var owner = 'kuoyuan111';
+        var repo = 'jeju-2026-itinerary';
+        var filePath = 'itinerary-data.json';
+        var url = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + filePath;
+
+        var syncBtn = document.querySelector('button[onclick="syncToGitHub()"]');
+        var originalText = syncBtn ? syncBtn.innerHTML : '☁️ 同步到 GitHub';
+        if (syncBtn) {
+          syncBtn.innerHTML = '⏳ 同步中...';
+          syncBtn.disabled = true;
+        }
+
+        fetch(url, {
+          headers: {
+            'Authorization': 'token ' + token,
+            'Accept': 'application/vnd.github.v3+json'
+          }
+        })
+        .then(function(res) {
+          if (res.status === 404) return null;
+          if (!res.ok) throw new Error('無法取得遠端檔案資訊（狀態：' + res.status + '）');
+          return res.json();
+        })
+        .then(function(fileData) {
+          var sha = fileData ? fileData.sha : null;
+          var base64Content = btoa(unescape(encodeURIComponent(edits)));
+
+          var bodyData = {
+            message: 'update itinerary data via web interface',
+            content: base64Content,
+            branch: 'main'
+          };
+          if (sha) bodyData.sha = sha;
+
+          return fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Authorization': 'token ' + token,
+              'Content-Type': 'application/json',
+              'Accept': 'application/vnd.github.v3+json'
+            },
+            body: JSON.stringify(bodyData)
+          });
+        })
+        .then(function(res) {
+          if (!res.ok) {
+            return res.json().then(function(errData) {
+              throw new Error(errData.message || '寫入失敗');
+            });
+          }
+          return res.json();
+        })
+        .then(function() {
+          alert('☁️ 同步成功！\nGitHub 已收錄您的最新編輯。預計 1~2 分鐘內 GitHub Pages 將會完成部署並更新給所有家人！');
+        })
+        .catch(function(err) {
+          alert('❌ 同步失敗：' + err.message + '\n請檢查您的 Token 是否正確且具備 Repository 的 Write 寫入權限。');
+          if (confirm('是否需要重新輸入/清除 GitHub Token？')) {
+            localStorage.removeItem('jeju-github-token');
+            showGitHubTokenModal();
+          }
+        })
+        .finally(function() {
+          if (syncBtn) {
+            syncBtn.innerHTML = originalText;
+            syncBtn.disabled = false;
+          }
+        });
+      }
+
+      function loadRemoteEdits() {
+        var randomNum = Math.random();
+        fetch('itinerary-data.json?t=' + randomNum)
+          .then(function(res) {
+            if (!res.ok) throw new Error('No remote file');
+            return res.json();
+          })
+          .then(function(data) {
+            if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+              Object.keys(data).forEach(function(field) {
+                applyFieldEdit(field, data[field]);
+              });
+              updateResetBtn();
+            }
+          })
+          .catch(function(err) {
+            var edits = getSavedEdits();
+            if (edits && Object.keys(edits).length > 0) {
+              Object.keys(edits).forEach(function(field) {
+                applyFieldEdit(field, edits[field]);
+              });
+            }
+            updateResetBtn();
+          });
+      }
+
       // === 初始化 ===
-      applyEdits();
+      loadRemoteEdits();
       updateResetBtn();
 
       // 解決 iOS Safari 事件委派不冒泡的 Bug
