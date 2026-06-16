@@ -422,6 +422,7 @@
     }
     body.edit-mode [data-editable] {
       transition: outline 0.2s, outline-offset 0.2s;
+      cursor: pointer; /* 解決 iOS Safari 事件代理不冒泡的問題 */
     }
     .reset-btn { display: none !important; }
     .reset-btn.visible { display: inline-flex !important; }
@@ -1492,6 +1493,11 @@
       // === 初始化 ===
       applyEdits();
       updateResetBtn();
+
+      // 解決 iOS Safari 事件委派不冒泡的 Bug
+      document.querySelectorAll('[data-editable]').forEach(function(el) {
+        el.onclick = function() {};
+      });
 
     })();
   </script>
