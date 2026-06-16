@@ -785,7 +785,7 @@
 
     <section class="bottom">
       <div class="section-title">必吃美食推薦</div>
-      <div class="food-row">
+      <div class="food-row" data-editable="food">
         <div class="food-item"><img src="assets/food-black-pork.png" alt="" /><span>黑豬肉燒肉</span></div>
         <div class="food-item"><img src="assets/food-abalone.png" alt="" /><span>鮑魚粥</span></div>
         <div class="food-item"><img src="assets/food-garlic-bread.png" alt="" /><span>大蒜麵包</span></div>
@@ -994,7 +994,14 @@
             { label: '傍晚', items: ['19:00 加油 → 20:00 機場還車', 'LJ763 22:15 起飛 → 00:15 抵達 T1'] }
           ],
           drive: ''
-        }
+        },
+        food: [
+          { name: '黑豬肉燒肉', img: 'assets/food-black-pork.png' },
+          { name: '鮑魚粥', img: 'assets/food-abalone.png' },
+          { name: '大蒜麵包', img: 'assets/food-garlic-bread.png' },
+          { name: '濟州柑橘', img: 'assets/hallabong-mascot.png' },
+          { name: '帶魚・海鮮', img: 'assets/scene-jeju-coast.png' }
+        ]
       };
 
       var fieldLabels = {
@@ -1014,7 +1021,8 @@
         day6: 'DAY 6 行程',
         day7: 'DAY 7 行程',
         day8: 'DAY 8 行程',
-        'github-token': 'GitHub 存取 Token'
+        'github-token': 'GitHub 存取 Token',
+        food: '必吃美食推薦'
       };
 
       // === 工具函數 ===
@@ -1185,6 +1193,24 @@
                 grid.appendChild(div);
               });
             }
+            break;
+          case 'food':
+            el.innerHTML = '';
+            value.forEach(function(item) {
+              var itemDiv = document.createElement('div');
+              itemDiv.className = 'food-item';
+              
+              var img = document.createElement('img');
+              img.src = item.img;
+              img.alt = item.name;
+              
+              var span = document.createElement('span');
+              span.textContent = item.name;
+              
+              itemDiv.appendChild(img);
+              itemDiv.appendChild(span);
+              el.appendChild(itemDiv);
+            });
             break;
         }
       }
@@ -1369,6 +1395,27 @@
               '<button class="add-item-btn" onclick="addListItem()">＋ 新增項目</button>';
             body.innerHTML = listHtml;
             break;
+          case 'food':
+            var items = Array.isArray(current) ? current : [];
+            var html = '<div id="editFoodContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:12px;">';
+            items.forEach(function(item) {
+              html += '<div class="edit-food-item" style="display:flex; gap:8px; align-items:center;">' +
+                '<input type="text" placeholder="美食名稱" value="' + escapeHtml(item.name) + '" style="flex:2;" />' +
+                '<select style="flex:2; padding:10px; border:2px solid #ecd9c8; border-radius:12px; font-family:inherit; background:#fffbf7;">' +
+                  '<option value="assets/food-black-pork.png"' + (item.img === 'assets/food-black-pork.png' ? ' selected' : '') + '>黑豬肉燒肉圖</option>' +
+                  '<option value="assets/food-abalone.png"' + (item.img === 'assets/food-abalone.png' ? ' selected' : '') + '>鮑魚粥圖</option>' +
+                  '<option value="assets/food-garlic-bread.png"' + (item.img === 'assets/food-garlic-bread.png' ? ' selected' : '') + '>大蒜麵包圖</option>' +
+                  '<option value="assets/hallabong-mascot.png"' + (item.img === 'assets/hallabong-mascot.png' ? ' selected' : '') + '>濟州柑橘圖</option>' +
+                  '<option value="assets/scene-jeju-coast.png"' + (item.img === 'assets/scene-jeju-coast.png' ? ' selected' : '') + '>帶魚海鮮圖</option>' +
+                  '<option value="assets/scene-snoopy.png"' + (item.img === 'assets/scene-snoopy.png' ? ' selected' : '') + '>史努比花園圖</option>' +
+                '</select>' +
+                '<button class="remove-item" onclick="this.parentElement.remove()" style="width:32px; height:32px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>' +
+                '</div>';
+            });
+            html += '</div>' +
+              '<button class="add-item-btn" type="button" onclick="addFoodItem()">＋ 新增美食</button>';
+            body.innerHTML = html;
+            break;
         }
 
         // 顯示 modal
@@ -1530,6 +1577,17 @@
                 if (v) value.push(v);
               });
               break;
+            case 'food':
+              var itemElements = document.querySelectorAll('#editFoodContainer .edit-food-item');
+              value = [];
+              itemElements.forEach(function(el) {
+                var name = el.querySelector('input').value.trim();
+                var img = el.querySelector('select').value;
+                if (name) {
+                  value.push({ name: name, img: img });
+                }
+              });
+              break;
           }
         }
 
@@ -1554,6 +1612,25 @@
       window.removeListItem = function(btn) {
         var item = btn.parentElement;
         item.remove();
+      };
+
+      window.addFoodItem = function() {
+        var container = document.getElementById('editFoodContainer');
+        var div = document.createElement('div');
+        div.className = 'edit-food-item';
+        div.style.cssText = 'display:flex; gap:8px; align-items:center;';
+        div.innerHTML = '<input type="text" placeholder="美食名稱" value="" style="flex:2;" />' +
+          '<select style="flex:2; padding:10px; border:2px solid #ecd9c8; border-radius:12px; font-family:inherit; background:#fffbf7;">' +
+            '<option value="assets/food-black-pork.png">黑豬肉燒肉圖</option>' +
+            '<option value="assets/food-abalone.png">鮑魚粥圖</option>' +
+            '<option value="assets/food-garlic-bread.png">大蒜麵包圖</option>' +
+            '<option value="assets/hallabong-mascot.png">濟州柑橘圖</option>' +
+            '<option value="assets/scene-jeju-coast.png">帶魚海鮮圖</option>' +
+            '<option value="assets/scene-snoopy.png">史努比花園圖</option>' +
+          '</select>' +
+          '<button class="remove-item" onclick="this.parentElement.remove()" style="width:32px; height:32px; border-radius:50%; border:none; background:#fee; color:#e53935; cursor:pointer;">×</button>';
+        container.appendChild(div);
+        div.querySelector('input').focus();
       };
 
       window.exportItineraryData = function() {
