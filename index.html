@@ -586,6 +586,26 @@
       border-color: transparent;
       box-shadow: 0 2px 6px rgba(240, 120, 64, 0.2);
     }
+    .naver-popup-btn {
+      display: block;
+      text-align: center;
+      background: #03C75A;
+      color: #fff !important;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      text-decoration: none;
+      font-weight: bold;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: background 0.2s, transform 0.1s;
+    }
+    .naver-popup-btn:hover {
+      background: #02a94d !important;
+      transform: translateY(-1px);
+    }
+    .naver-popup-btn:active {
+      transform: translateY(0);
+    }
     /* 修正列印地圖的問題 */
     @media print {
       .map-controls, #map { display: none !important; }
@@ -807,6 +827,10 @@
               <button class="map-btn" onclick="filterMapDay(8)">D8</button>
             </div>
             <div id="map" style="height: 300px; border-radius: 16px; border: 1px solid #f2e3d5; position: relative; z-index: 1;"></div>
+            <div class="no-print" style="font-size: 10px; color: #8c7d6f; margin-top: 8px; line-height: 1.4; display: flex; align-items: flex-start; gap: 4px;">
+              <span>💡</span>
+              <span>提示：地圖採用 Google Maps 圖資。點擊地圖景點標記彈出的視窗中，可一鍵開啟 Naver Map 進行韓國汽車自駕導航。</span>
+            </div>
           </div>
         </div>
         <div class="side-card">
@@ -1894,59 +1918,59 @@
         1: {
           color: '#e85d4a',
           points: [
-            { name: '濟州國際機場', lat: 33.5113, lng: 126.4930 },
-            { name: 'VENTIMO 飯店', lat: 33.4890, lng: 126.4851 },
-            { name: '熟成到 (老衡店)', lat: 33.4839, lng: 126.4795 }
+            { name: '濟州國際機場', search: '제주국제공항', lat: 33.5113, lng: 126.4930 },
+            { name: 'VENTIMO 飯店', search: '벤티모 호텔', lat: 33.4890, lng: 126.4851 },
+            { name: '熟成到 (老衡店)', search: '숙성도 노형점', lat: 33.4839, lng: 126.4795 }
           ]
         },
         2: {
           color: '#3d8fd4',
           points: [
-            { name: '史努比花園', lat: 33.4542, lng: 126.7791 },
-            { name: '城邑民俗村', lat: 33.3838, lng: 126.7995 }
+            { name: '史努比花園', search: '스누피가든', lat: 33.4542, lng: 126.7791 },
+            { name: '城邑民俗村', search: '성읍민속마을', lat: 33.3838, lng: 126.7995 }
           ]
         },
         3: {
           color: '#f5a623',
           points: [
-            { name: '9.81 Park', lat: 33.3643, lng: 126.3576 },
-            { name: '神話主題公園', lat: 33.3061, lng: 126.3154 }
+            { name: '9.81 Park', search: '9.81 파크', lat: 33.3643, lng: 126.3576 },
+            { name: '神話主題公園', search: '신화테麻파크', lat: 33.3061, lng: 126.3154 }
           ]
         },
         4: {
           color: '#5cb85c',
           points: [
-            { name: '城山港 (牛島渡輪)', lat: 33.4733, lng: 126.9328 },
-            { name: '牛島', lat: 33.5065, lng: 126.9538 },
-            { name: '城山日出峰', lat: 33.4590, lng: 126.9421 }
+            { name: '城山港 (牛島渡輪)', search: '성산항', lat: 33.4733, lng: 126.9328 },
+            { name: '牛島', search: '우도', lat: 33.5065, lng: 126.9538 },
+            { name: '城山日出峰', search: '성산일출봉', lat: 33.4590, lng: 126.9421 }
           ]
         },
         5: {
           color: '#9b6fd4',
           points: [
-            { name: '山房山樂園', lat: 33.2438, lng: 126.3142 },
-            { name: '西歸浦偶來市場', lat: 33.2501, lng: 126.5645 }
+            { name: '山房山樂園', search: '산방산랜드', lat: 33.2438, lng: 126.3142 },
+            { name: '西歸浦偶來市場', search: '서귀포매일올레시장', lat: 33.2501, lng: 126.5645 }
           ]
         },
         6: {
           color: '#e87aab',
           points: [
-            { name: '東門市場', lat: 33.5126, lng: 126.5283 },
-            { name: '濟州亂打秀劇場', lat: 33.5042, lng: 126.5410 }
+            { name: '東門市場', search: '동문재래시장', lat: 33.5126, lng: 126.5283 },
+            { name: '濟州亂打秀劇場', search: '제주난타극장', lat: 33.5042, lng: 126.5410 }
           ]
         },
         7: {
           color: '#f07840',
           points: [
-            { name: '咸德海灘', lat: 33.5430, lng: 126.6682 },
-            { name: 'Flowave 落火祭', lat: 33.5398, lng: 126.6710 }
+            { name: '咸德海灘', search: '함덕해수욕장', lat: 33.5430, lng: 126.6682 },
+            { name: 'Flowave 落火祭', search: '플로우웨이브', lat: 33.5398, lng: 126.6710 }
           ]
         },
         8: {
           color: '#4a9fd8',
           points: [
-            { name: 'VENTIMO 退房', lat: 33.4890, lng: 126.4851 },
-            { name: '機場還車', lat: 33.5113, lng: 126.4930 }
+            { name: 'VENTIMO 退房', search: '벤티모 호텔', lat: 33.4890, lng: 126.4851 },
+            { name: '機場還車', search: '제주국제공항', lat: 33.5113, lng: 126.4930 }
           ]
         }
       };
@@ -1995,9 +2019,8 @@
           zoomControl: true
         });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          subdomains: 'abcd',
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&hl=zh-TW&x={x}&y={y}&z={z}', {
+          attribution: '&copy; <a href="https://www.google.com/maps">Google Maps</a>',
           maxZoom: 20
         }).addTo(map);
 
@@ -2053,9 +2076,13 @@
                 iconAnchor: [11, 11]
               });
 
+              var naverUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent(pt.search || pt.name);
               var marker = L.marker(latlng, { icon: icon }).addTo(markerGroup);
-              var popupContent = '<strong>DAY ' + d + ' - ' + pt.name + '</strong><br/>' +
-                '<span style="font-size:11px; color:#666;">本日重點: ' + domInfo.title + '</span>';
+              var popupContent = '<div style="font-family: inherit; line-height: 1.4; padding: 2px;">' +
+                '<strong>DAY ' + d + ' - ' + pt.name + '</strong><br/>' +
+                '<span style="font-size:11px; color:#666; display:block; margin-bottom:6px;">本日重點: ' + domInfo.title + '</span>' +
+                '<a href="' + naverUrl + '" target="_blank" class="naver-popup-btn">🟢 喚起 Naver 導航</a>' +
+                '</div>';
               marker.bindPopup(popupContent);
             });
 
@@ -2098,12 +2125,15 @@
               iconAnchor: [13, 13]
             });
 
+            var naverUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent(pt.search || pt.name);
             var marker = L.marker(latlng, { icon: icon }).addTo(markerGroup);
-            var popupContent = '<div style="max-width:200px;">' +
+            var popupContent = '<div style="max-width:200px; font-family: inherit; line-height: 1.4; padding: 2px;">' +
               '<strong>' + pt.name + ' (D' + day + '-' + (idx + 1) + ')</strong><br/>' +
-              '<div style="font-size:11px; margin-top:4px; border-top:1px solid #eee; padding-top:4px; line-height:1.4;">' +
+              '<div style="font-size:11px; margin-top:4px; border-top:1px solid #eee; padding-top:4px; line-height:1.4; margin-bottom:8px;">' +
               domInfo.desc +
-              '</div></div>';
+              '</div>' +
+              '<a href="' + naverUrl + '" target="_blank" class="naver-popup-btn">🟢 喚起 Naver 導航</a>' +
+              '</div>';
             
             if (idx === 0) {
               marker.bindPopup(popupContent).addTo(markerGroup).openPopup();
