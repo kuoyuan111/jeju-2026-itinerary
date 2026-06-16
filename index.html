@@ -744,6 +744,54 @@
       0%, 100% { transform: scale(1); opacity: 0.95; }
       50% { transform: scale(1.02); opacity: 1; box-shadow: 0 4px 15px rgba(240, 120, 64, 0.08); }
     }
+    
+    /* ====== 分享按鈕與 Toast/Modal 樣式 ====== */
+    .toolbar .share-btn {
+      background: rgba(240, 120, 64, 0.08) !important;
+      color: var(--orange) !important;
+      border: 1.5px solid rgba(240, 120, 64, 0.25) !important;
+      font-weight: 700;
+    }
+    .toolbar .share-btn:hover {
+      background: rgba(240, 120, 64, 0.15) !important;
+      border-color: rgba(240, 120, 64, 0.4) !important;
+    }
+    .toast-notification {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(40px);
+      background: rgba(44, 44, 44, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .toast-notification.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .share-confirm-title {
+      background: none !important;
+      -webkit-background-clip: initial !important;
+      -webkit-text-fill-color: initial !important;
+      font-size: 19px !important;
+      justify-content: center !important;
+      color: var(--purple) !important;
+    }
+    .share-confirm-title::before {
+      content: "" !important;
+    }
+
     /* 修正列印地圖的問題 */
     @media print {
       .map-controls, #map { display: none !important; }
@@ -754,6 +802,7 @@
   <div class="toolbar no-print">
     <button onclick="window.print()">列印 / 存成 PDF</button>
     <button class="secondary" onclick="syncToGitHub()">☁️ 同步到 GitHub</button>
+    <button class="secondary share-btn" onclick="shareItineraryLink()">🔗 分享行程</button>
     
     <div class="dropdown" id="manageDropdown">
       <button class="secondary" onclick="toggleDropdown(event)">⚙️ 管理與備份</button>
@@ -1051,6 +1100,27 @@
       <div class="edit-actions">
         <button class="cancel-btn" onclick="closeModal()">取消</button>
         <button class="save-btn" onclick="saveEdit()">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示 -->
+  <div id="toastNotification" class="toast-notification no-print">
+    <span id="toastMessage"></span>
+  </div>
+
+  <!-- 分享行程確認彈窗 -->
+  <div class="edit-overlay" id="shareConfirmOverlay">
+    <div class="edit-modal" style="max-width: 420px; text-align: center; padding: 28px;">
+      <div style="font-size: 40px; margin-bottom: 16px;">📥</div>
+      <h3 class="share-confirm-title">偵測到分享行程！</h3>
+      <p style="font-size: 13.5px; line-height: 1.6; margin-bottom: 20px; text-align: left;">
+        這是來自家人的專屬行程分享。是否要載入此行程並應用到您的裝置？<br/>
+        <span style="color: #e53935; font-size: 12.5px; display: block; margin-top: 8px;">⚠️ 注意：載入後將會套用分享的內容，您目前的本地修改將會被覆蓋。</span>
+      </p>
+      <div class="edit-actions" style="justify-content: center; gap: 12px;">
+        <button class="cancel-btn" onclick="closeShareConfirm(false)">取消</button>
+        <button class="save-btn" style="background: var(--purple-grad);" onclick="closeShareConfirm(true)">確定載入</button>
       </div>
     </div>
   </div>
@@ -2694,11 +2764,118 @@
         });
       }
 
+      // === UTF-8 安全的 Base64 編解碼工具 ===
+      function safeBtoa(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+          return String.fromCharCode(parseInt(p1, 16));
+        }));
+      }
+
+      function safeAtob(str) {
+        try {
+          return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+        } catch (e) {
+          console.error('Base64 decode error:', e);
+          return null;
+        }
+      }
+
+      // === 分享行程連結邏輯 ===
+      window.shareItineraryLink = function() {
+        var editsStr = localStorage.getItem(STORAGE_KEY);
+        if (!editsStr || editsStr === '{}') {
+          showToast('💡 目前使用的是預設行程。請先進行修改，再分享您的專屬行程！');
+          return;
+        }
+
+        try {
+          var encoded = safeBtoa(editsStr);
+          var shareUrl = window.location.origin + window.location.pathname + '?share=' + encoded;
+
+          navigator.clipboard.writeText(shareUrl).then(function() {
+            showToast('✨ 專屬行程分享連結已複製到剪貼簿，快發送給家人吧！');
+          }, function() {
+            // 剪貼簿 API 失敗時的備用方案
+            alert('分享連結產生成功：\n\n' + shareUrl);
+          });
+        } catch (e) {
+          console.error('Failed to generate share link:', e);
+          showToast('❌ 生成分享連結失敗，請稍後再試。');
+        }
+      };
+
+      // === Toast 提示 ===
+      function showToast(msg) {
+        var toast = document.getElementById('toastNotification');
+        var msgEl = document.getElementById('toastMessage');
+        if (!toast || !msgEl) return;
+
+        msgEl.textContent = msg;
+        toast.classList.add('show');
+
+        if (window.toastTimer) clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(function() {
+          toast.classList.remove('show');
+        }, 3500);
+      }
+
+      // === 檢測分享連結與確認彈窗 ===
+      var pendingShareData = null;
+
+      function checkSharedLink() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var shareData = urlParams.get('share');
+        if (!shareData) return;
+
+        try {
+          var decodedStr = safeAtob(shareData);
+          if (!decodedStr) return;
+
+          var decodedObj = JSON.parse(decodedStr);
+          if (decodedObj && typeof decodedObj === 'object') {
+            pendingShareData = decodedObj;
+            
+            // 彈出確認 Modal
+            var modal = document.getElementById('shareConfirmOverlay');
+            if (modal) {
+              modal.classList.add('show');
+            }
+          }
+        } catch (e) {
+          console.error('Failed to parse share data:', e);
+        }
+      }
+
+      window.closeShareConfirm = function(approved) {
+        var modal = document.getElementById('shareConfirmOverlay');
+        if (modal) {
+          modal.classList.remove('show');
+        }
+
+        if (approved && pendingShareData) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(pendingShareData));
+          showToast('📥 成功載入分享的行程！即時套用中...');
+          setTimeout(function() {
+            // 清除 URL 參數並重整頁面以套用
+            var cleanUrl = window.location.origin + window.location.pathname;
+            window.location.href = cleanUrl;
+          }, 1500);
+        } else {
+          // 清除 URL 參數以防重複提示
+          var cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        }
+        pendingShareData = null;
+      };
+
       // === 初始化 ===
       loadRemoteEdits();
       updateResetBtn();
       initTripCountdown();
       initMobileAccordion();
+      checkSharedLink();
 
       // 解決 iOS Safari 事件委派不冒泡的 Bug
       document.querySelectorAll('[data-editable]').forEach(function(el) {
