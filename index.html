@@ -883,6 +883,121 @@
       text-align: left;
     }
 
+    /* ====== 餐廳預約提醒樣式 ====== */
+    .noti-btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--purple-grad);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(123, 94, 167, 0.2);
+      transition: all 0.3s ease;
+      margin-bottom: 14px;
+    }
+    .noti-btn.authorized {
+      background: #eaf8ea;
+      color: #2d7a2d;
+      border: 1px solid #b8e5b8;
+      box-shadow: none;
+      cursor: default;
+    }
+    .restaurant-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .booking-item {
+      background: #fffbf7;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+    }
+    .booking-item-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .booking-day-badge {
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      background: var(--purple);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .booking-time {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--orange);
+    }
+    .booking-name {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-top: 2px;
+      padding-right: 48px;
+    }
+    .booking-memo {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+    .booking-item-actions {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      display: flex;
+      gap: 6px;
+    }
+    .booking-nav-btn {
+      background: #eaf8ea;
+      border: 1px solid #b8e5b8;
+      border-radius: 6px;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      color: #2d7a2d;
+      transition: all 0.2s;
+    }
+    .booking-nav-btn:hover {
+      background: #b8e5b8;
+    }
+    .booking-del-btn {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .booking-del-btn:hover {
+      background: #ffeeee;
+      border-color: #ffcccc;
+      color: #d32f2f;
+    }
+
     /* 修正列印地圖的問題 */
     @media print {
       .map-controls, #map { display: none !important; }
@@ -1147,6 +1262,44 @@
                 <div class="skeleton-line" style="width: 60%; height: 24px; margin: 8px auto 12px auto; border-radius: 4px;"></div>
                 <div class="skeleton-line" style="width: 80%; height: 16px; margin: 0 auto 8px auto; border-radius: 4px;"></div>
                 <div class="skeleton-line" style="width: 100%; height: 36px; margin-top: 16px; border-radius: 6px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="side-card" id="restaurantCard">
+          <div class="side-head purple">🍽️ 餐廳預約與提醒</div>
+          <div class="side-body" style="padding: 14px;">
+            <!-- 開啟通知授權按鈕 -->
+            <button id="notiAuthBtn" class="noti-btn no-print" onclick="requestNotiPermission()">🔔 開啟餐廳提醒功能</button>
+            
+            <!-- 預訂清單容器 -->
+            <div id="restaurantListContainer" class="restaurant-list">
+              <!-- JS 動態生成項目 -->
+            </div>
+
+            <!-- 新增預訂表單 -->
+            <div class="add-booking-box no-print" style="margin-top: 16px; border-top: 1px dashed var(--border-color); padding-top: 14px;">
+              <h4 style="font-size: 12.5px; margin-bottom: 10px; color: var(--purple);">➕ 新增預約餐廳</h4>
+              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <select id="bookingDay" style="flex: 1.2; padding: 6px; font-size: 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; background: #fffbf7;">
+                  <option value="1">Day 1</option>
+                  <option value="2">Day 2</option>
+                  <option value="3">Day 3</option>
+                  <option value="4">Day 4</option>
+                  <option value="5">Day 5</option>
+                  <option value="6">Day 6</option>
+                  <option value="7">Day 7</option>
+                  <option value="8">Day 8</option>
+                </select>
+                <input type="text" id="bookingTime" placeholder="時間 (如 18:30)" style="flex: 1.8; padding: 6px; font-size: 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-family: inherit; background: #fffbf7;" />
+              </div>
+              <input type="text" id="bookingName" placeholder="餐廳名稱" style="width: 100%; padding: 6px; font-size: 12px; border: 1.5px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; font-family: inherit; background: #fffbf7;" />
+              <input type="text" id="bookingMemo" placeholder="備註 (如：已付訂金)" style="width: 100%; padding: 6px; font-size: 12px; border: 1.5px solid var(--border-color); border-radius: 8px; margin-bottom: 10px; font-family: inherit; background: #fffbf7;" />
+              
+              <div style="display: flex; gap: 8px;">
+                <button class="save-btn" onclick="saveNewBooking()" style="flex: 2; padding: 6px 12px; font-size: 11.5px; border-radius: 8px; font-family: inherit;">儲存預約</button>
+                <button class="cancel-btn" onclick="triggerTestBooking()" style="flex: 1.2; padding: 6px 4px; font-size: 11px; border-radius: 8px; white-space: nowrap; font-family: inherit;" title="10秒後測試系統通知">立即測試</button>
               </div>
             </div>
           </div>
@@ -3092,6 +3245,245 @@
           });
       }
 
+      // === 餐廳預約與提醒邏輯 ===
+      var defaultBookings = [
+        { id: 1, day: 1, time: '20:30', name: '熟成到 (老衡店)', memo: '已預約晚餐，車程 5 分' },
+        { id: 2, day: 7, time: '18:00', name: 'Flowave 落火祭咖啡廳', memo: '已付 5 萬韓元訂金' }
+      ];
+
+      var sentReminders = {}; // 記憶體中已發送提醒記錄，防範重覆發送
+
+      function getBookings() {
+        var edits = getSavedEdits();
+        if (!edits.restaurants) {
+          // 初始化為預設項目
+          edits.restaurants = defaultBookings;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+        }
+        return edits.restaurants;
+      }
+
+      function updateBookingListUI() {
+        var container = document.getElementById('restaurantListContainer');
+        if (!container) return;
+
+        var bookings = getBookings();
+        if (bookings.length === 0) {
+          container.innerHTML = '<div style="text-align:center; font-size:12px; color:#999; padding:12px 0;">📋 目前無餐廳預約。</div>';
+          return;
+        }
+
+        // 依天數與時間排序
+        bookings.sort(function(a, b) {
+          if (a.day !== b.day) return a.day - b.day;
+          return a.time.localeCompare(b.time);
+        });
+
+        var html = '';
+        bookings.forEach(function(booking, idx) {
+          var naverUrl = 'https://map.naver.com/v5/search/' + encodeURIComponent(booking.name);
+          html += '<div class="booking-item">';
+          html += '  <div class="booking-item-meta">';
+          html += '    <span class="booking-day-badge">Day ' + booking.day + '</span>';
+          html += '    <span class="booking-time">' + booking.time + '</span>';
+          html += '  </div>';
+          html += '  <div class="booking-name">' + escapeHtml(booking.name) + '</div>';
+          if (booking.memo) {
+            html += '  <div class="booking-memo">' + escapeHtml(booking.memo) + '</div>';
+          }
+          html += '  <div class="booking-item-actions">';
+          html += '    <a href="' + naverUrl + '" target="_blank" class="booking-nav-btn" title="喚起 Naver 導航">🟢</a>';
+          html += '    <button onclick="deleteBooking(' + booking.id + ')" class="booking-del-btn" title="刪除預約">❌</button>';
+          html += '  </div>';
+          html += '</div>';
+        });
+
+        container.innerHTML = html;
+      }
+
+      window.requestNotiPermission = function() {
+        if (!('Notification' in window)) {
+          showToast('❌ 您的瀏覽器不支援桌面通知功能。');
+          return;
+        }
+
+        Notification.requestPermission().then(function(permission) {
+          updateNotiBtnUI();
+          if (permission === 'granted') {
+            showToast('✅ 餐廳預約系統桌面提醒功能已啟用！');
+            // 發送測試通知
+            new Notification('🍽️ 濟州島自駕餐廳提醒', {
+              body: '桌面通知已啟用！系統會在餐廳預約前 2 小時與 30 分鐘發送提醒。',
+              icon: 'assets/hallabong-mascot.png'
+            });
+          } else {
+            showToast('⚠️ 未能取得通知權限，您將無法收到桌面提醒。');
+          }
+        });
+      };
+
+      function updateNotiBtnUI() {
+        var btn = document.getElementById('notiAuthBtn');
+        if (!btn) return;
+
+        if (!('Notification' in window)) {
+          btn.style.display = 'none';
+          return;
+        }
+
+        if (Notification.permission === 'granted') {
+          btn.textContent = '✅ 已開啟預約通知提醒';
+          btn.classList.add('authorized');
+          btn.onclick = null;
+        } else {
+          btn.textContent = '🔔 開啟餐廳提醒功能';
+          btn.classList.remove('authorized');
+          btn.onclick = requestNotiPermission;
+        }
+      }
+
+      window.saveNewBooking = function() {
+        var daySelect = document.getElementById('bookingDay');
+        var timeInput = document.getElementById('bookingTime');
+        var nameInput = document.getElementById('bookingName');
+        var memoInput = document.getElementById('bookingMemo');
+
+        if (!timeInput || !nameInput) return;
+
+        var day = parseInt(daySelect.value, 10);
+        var time = timeInput.value.trim();
+        var name = nameInput.value.trim();
+        var memo = memoInput.value.trim();
+
+        if (!time || !name) {
+          showToast('⚠️ 請輸入時間與餐廳名稱。');
+          return;
+        }
+
+        // 時間格式簡單驗證 (如 18:30)
+        if (!/^\d{2}:\d{2}$/.test(time)) {
+          showToast('⚠️ 時間格式錯誤，請使用 24 小時制（如 18:30）。');
+          return;
+        }
+
+        var bookings = getBookings();
+        var maxId = 0;
+        bookings.forEach(function(b) {
+          if (b.id > maxId) maxId = b.id;
+        });
+
+        var newBooking = {
+          id: maxId + 1,
+          day: day,
+          time: time,
+          name: name,
+          memo: memo
+        };
+
+        bookings.push(newBooking);
+
+        var edits = getSavedEdits();
+        edits.restaurants = bookings;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+        
+        // 清空輸入
+        timeInput.value = '';
+        nameInput.value = '';
+        memoInput.value = '';
+
+        updateBookingListUI();
+        showToast('✨ 餐廳預約新增成功！');
+      };
+
+      window.deleteBooking = function(id) {
+        if (!confirm('確定要刪除此筆餐廳預約？')) return;
+
+        var bookings = getBookings();
+        var updated = bookings.filter(function(b) {
+          return b.id !== id;
+        });
+
+        var edits = getSavedEdits();
+        edits.restaurants = updated;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+
+        updateBookingListUI();
+        showToast('❌ 預約項目已刪除。');
+      };
+
+      // === 立即測試通知 (10秒後觸發) ===
+      window.triggerTestBooking = function() {
+        if (!('Notification' in window) || Notification.permission !== 'granted') {
+          showToast('⚠️ 請先開啟「系統通知提醒」授權。');
+          return;
+        }
+
+        showToast('🚀 測試通知已送出！請將瀏覽器縮小或切換至其他分頁，10 秒後會收到桌面通知。');
+        setTimeout(function() {
+          new Notification('🍽️ 餐廳預約測試提醒 (10s)', {
+            body: '這是您的濟州島餐廳預訂測試通知！點擊可回到自駕行程網頁。',
+            icon: 'assets/hallabong-mascot.png'
+          });
+        }, 10000);
+      };
+
+      // === 後台定時檢查餐廳提醒 (每60秒執行一次) ===
+      function checkRestaurantReminders() {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+        var bookings = getBookings();
+        if (bookings.length === 0) return;
+
+        var now = new Date();
+        var currentYear = 2026;
+        var startMonth = 7; // 7月
+        var startDay = 4;   // 7月4日為 Day 1
+
+        bookings.forEach(function(booking) {
+          var timeParts = booking.time.split(':');
+          var hour = parseInt(timeParts[0], 10);
+          var min = parseInt(timeParts[1], 10);
+
+          // 計算該預訂日期所對應的實際自駕日期
+          var dayOffset = booking.day - 1;
+          var actualDay = startDay + dayOffset;
+
+          // 構造預訂項目的 Date 對象
+          var bookingDate = new Date(currentYear, startMonth - 1, actualDay, hour, min, 0);
+
+          var diffMs = bookingDate.getTime() - now.getTime();
+          var diffMin = Math.round(diffMs / (1000 * 60));
+
+          // 在 2 小時前 (120 分鐘) 或 30 分鐘前發送通知
+          if (diffMin === 120 || diffMin === 30) {
+            var reminderKey = booking.id + '_' + diffMin;
+            if (!sentReminders[reminderKey]) {
+              sentReminders[reminderKey] = true;
+              
+              var title = '🍽️ 濟州島自駕餐廳預約提醒';
+              var body = '您預約了 ' + (diffMin === 120 ? '2 小時後' : '30 分鐘後') + ' (' + booking.time + ') 的『' + booking.name + '』。' +
+                         (booking.memo ? '\n備註: ' + booking.memo : '') + '\n請提早準備出發！';
+
+              new Notification(title, {
+                body: body,
+                icon: 'assets/hallabong-mascot.png',
+                tag: 'booking_' + booking.id
+              });
+            }
+          }
+        });
+      }
+
+      function initRestaurantScheduler() {
+        updateBookingListUI();
+        updateNotiBtnUI();
+        
+        // 啟動定時檢查器 (每分鐘一次)
+        setInterval(checkRestaurantReminders, 60000);
+        // 初始也立即檢查一次
+        checkRestaurantReminders();
+      }
+
       // === 初始化 ===
       loadRemoteEdits();
       updateResetBtn();
@@ -3099,6 +3491,7 @@
       initMobileAccordion();
       checkSharedLink();
       initWeatherForecast();
+      initRestaurantScheduler();
 
       // 解決 iOS Safari 事件委派不冒泡的 Bug
       document.querySelectorAll('[data-editable]').forEach(function(el) {
