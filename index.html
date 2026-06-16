@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
     :root {
       --bg: #fffbf7;
@@ -556,6 +558,38 @@
       background: #fff5ed !important;
       color: var(--orange) !important;
     }
+    /* ====== 自駕路線地圖 (Leaflet) ====== */
+    .map-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .map-btn {
+      padding: 6px 10px;
+      border: 1px solid #ecd9c8;
+      background: #fff;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .map-btn:hover {
+      background: #fff5ed;
+      border-color: var(--orange);
+    }
+    .map-btn.active {
+      background: var(--orange-grad);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 6px rgba(240, 120, 64, 0.2);
+    }
+    /* 修正列印地圖的問題 */
+    @media print {
+      .map-controls, #map { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -756,6 +790,23 @@
             <div class="overview-item"><span class="dot" style="background:var(--d6)">6</span>蓮洞商圈・亂打秀</div>
             <div class="overview-item"><span class="dot" style="background:var(--d7)">7</span>咸德・落火祭</div>
             <div class="overview-item"><span class="dot" style="background:var(--d8)">8</span>環島・還車返程</div>
+          </div>
+        </div>
+        <div class="side-card">
+          <div class="side-head orange">自駕路線地圖</div>
+          <div class="side-body" style="padding: 12px;">
+            <div class="map-controls">
+              <button class="map-btn active" onclick="filterMapDay('all')">全部</button>
+              <button class="map-btn" onclick="filterMapDay(1)">D1</button>
+              <button class="map-btn" onclick="filterMapDay(2)">D2</button>
+              <button class="map-btn" onclick="filterMapDay(3)">D3</button>
+              <button class="map-btn" onclick="filterMapDay(4)">D4</button>
+              <button class="map-btn" onclick="filterMapDay(5)">D5</button>
+              <button class="map-btn" onclick="filterMapDay(6)">D6</button>
+              <button class="map-btn" onclick="filterMapDay(7)">D7</button>
+              <button class="map-btn" onclick="filterMapDay(8)">D8</button>
+            </div>
+            <div id="map" style="height: 300px; border-radius: 16px; border: 1px solid #f2e3d5; position: relative; z-index: 1;"></div>
           </div>
         </div>
         <div class="side-card">
@@ -1141,6 +1192,10 @@
               item.appendChild(document.createTextNode(value.title));
             }
           });
+          // 重新繪製地圖以反映最新編輯內容
+          if (typeof map !== 'undefined' && map) {
+            renderMapDay(currentActiveDay);
+          }
           return;
         }
 
@@ -1667,7 +1722,7 @@
               throw new Error('Invalid format');
             }
             if (confirm('確定要匯入行程檔案？這將覆蓋您目前所有的編輯內容。')) {
-              localStorage.setItem('jeju-itinerary-edits', JSON.stringify(data));
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
               alert('匯入成功！即將重新整理頁面套用新行程。');
               window.location.reload();
             }
@@ -1812,6 +1867,11 @@
               });
             }
             updateResetBtn();
+          })
+          .finally(function() {
+            // 初始化 Leaflet 地圖並綁定互動
+            initItineraryMap();
+            bindOverviewInteraction();
           });
       }
 
@@ -1825,6 +1885,264 @@
         var dropdown = document.getElementById('manageDropdown');
         if (dropdown) dropdown.classList.remove('active');
       });
+
+      // ====== 地圖邏輯 (Leaflet) ======
+      var map, markerGroup, lineGroup;
+      var currentActiveDay = 'all';
+
+      var mapData = {
+        1: {
+          color: '#e85d4a',
+          points: [
+            { name: '濟州國際機場', lat: 33.5113, lng: 126.4930 },
+            { name: 'VENTIMO 飯店', lat: 33.4890, lng: 126.4851 },
+            { name: '熟成到 (老衡店)', lat: 33.4839, lng: 126.4795 }
+          ]
+        },
+        2: {
+          color: '#3d8fd4',
+          points: [
+            { name: '史努比花園', lat: 33.4542, lng: 126.7791 },
+            { name: '城邑民俗村', lat: 33.3838, lng: 126.7995 }
+          ]
+        },
+        3: {
+          color: '#f5a623',
+          points: [
+            { name: '9.81 Park', lat: 33.3643, lng: 126.3576 },
+            { name: '神話主題公園', lat: 33.3061, lng: 126.3154 }
+          ]
+        },
+        4: {
+          color: '#5cb85c',
+          points: [
+            { name: '城山港 (牛島渡輪)', lat: 33.4733, lng: 126.9328 },
+            { name: '牛島', lat: 33.5065, lng: 126.9538 },
+            { name: '城山日出峰', lat: 33.4590, lng: 126.9421 }
+          ]
+        },
+        5: {
+          color: '#9b6fd4',
+          points: [
+            { name: '山房山樂園', lat: 33.2438, lng: 126.3142 },
+            { name: '西歸浦偶來市場', lat: 33.2501, lng: 126.5645 }
+          ]
+        },
+        6: {
+          color: '#e87aab',
+          points: [
+            { name: '東門市場', lat: 33.5126, lng: 126.5283 },
+            { name: '濟州亂打秀劇場', lat: 33.5042, lng: 126.5410 }
+          ]
+        },
+        7: {
+          color: '#f07840',
+          points: [
+            { name: '咸德海灘', lat: 33.5430, lng: 126.6682 },
+            { name: 'Flowave 落火祭', lat: 33.5398, lng: 126.6710 }
+          ]
+        },
+        8: {
+          color: '#4a9fd8',
+          points: [
+            { name: 'VENTIMO 退房', lat: 33.4890, lng: 126.4851 },
+            { name: '機場還車', lat: 33.5113, lng: 126.4930 }
+          ]
+        }
+      };
+
+      function getDayInfoFromDom(dayNum) {
+        var el = document.querySelector('[data-editable="day' + dayNum + '"]');
+        if (!el) return null;
+
+        var title = '';
+        var metaEl = el.querySelector('.day-head .meta');
+        if (metaEl) {
+          var htmlParts = metaEl.innerHTML.split(/<br\s*\/?>/i);
+          title = htmlParts[1] ? htmlParts[1].trim() : (metaEl.textContent || '');
+        }
+
+        var descList = [];
+        var slots = el.querySelectorAll('.slot');
+        slots.forEach(function(slot) {
+          var labelEl = slot.querySelector('.slot-label');
+          var labelText = labelEl ? labelEl.textContent.trim() : '';
+          
+          var items = [];
+          var lis = slot.querySelectorAll('ul li');
+          lis.forEach(function(li) {
+            items.push(li.textContent.trim());
+          });
+          
+          if (labelText || items.length > 0) {
+            descList.push('<strong>' + labelText + '</strong>: ' + items.join(', '));
+          }
+        });
+
+        return {
+          title: title || ('DAY ' + dayNum),
+          desc: descList.length > 0 ? descList.join('<br/>') : '暫無行程內容'
+        };
+      }
+
+      function initItineraryMap() {
+        var mapContainer = document.getElementById('map');
+        if (!mapContainer) return;
+        
+        map = L.map('map', {
+          center: [33.38, 126.63],
+          zoom: 10,
+          zoomControl: true
+        });
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 20
+        }).addTo(map);
+
+        markerGroup = L.featureGroup().addTo(map);
+        lineGroup = L.featureGroup().addTo(map);
+
+        renderMapDay('all');
+      }
+
+      window.filterMapDay = function(day) {
+        currentActiveDay = day;
+        
+        var buttons = document.querySelectorAll('.map-btn');
+        buttons.forEach(function(btn) {
+          btn.classList.remove('active');
+        });
+        
+        var activeBtn = Array.from(buttons).find(function(btn) {
+          var onclickVal = btn.getAttribute('onclick');
+          return onclickVal && (onclickVal.indexOf("'" + day + "'") !== -1 || onclickVal.indexOf("(" + day + ")") !== -1);
+        });
+        if (activeBtn) activeBtn.classList.add('active');
+
+        renderMapDay(day);
+      };
+
+      function renderMapDay(day) {
+        if (!map) return;
+        markerGroup.clearLayers();
+        lineGroup.clearLayers();
+
+        var bounds = [];
+
+        if (day === 'all') {
+          var allLatLngs = [];
+          Object.keys(mapData).forEach(function(d) {
+            var dayInfo = mapData[d];
+            var dayLatLngs = [];
+            var domInfo = getDayInfoFromDom(d) || { title: 'DAY ' + d, desc: '' };
+            
+            dayInfo.points.forEach(function(pt) {
+              var latlng = [pt.lat, pt.lng];
+              dayLatLngs.push(latlng);
+              allLatLngs.push(latlng);
+              bounds.push(latlng);
+
+              var markerHtml = '<div style="background-color:' + dayInfo.color + '; width:22px; height:22px; border-radius:50%; border:2px solid #fff; display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; font-weight:bold; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">' + d + '</div>';
+              
+              var icon = L.divIcon({
+                html: markerHtml,
+                className: 'custom-div-icon',
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
+              });
+
+              var marker = L.marker(latlng, { icon: icon }).addTo(markerGroup);
+              var popupContent = '<strong>DAY ' + d + ' - ' + pt.name + '</strong><br/>' +
+                '<span style="font-size:11px; color:#666;">本日重點: ' + domInfo.title + '</span>';
+              marker.bindPopup(popupContent);
+            });
+
+            if (dayLatLngs.length > 1) {
+              L.polyline(dayLatLngs, {
+                color: dayInfo.color,
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '5, 5'
+              }).addTo(lineGroup);
+            }
+          });
+
+          if (allLatLngs.length > 1) {
+            L.polyline(allLatLngs, {
+              color: '#f07840',
+              weight: 2,
+              opacity: 0.4
+            }).addTo(lineGroup);
+          }
+
+        } else {
+          var dayInfo = mapData[day];
+          if (!dayInfo) return;
+
+          var domInfo = getDayInfoFromDom(day) || { title: 'DAY ' + day, desc: '暫無行程內容' };
+          var dayLatLngs = [];
+
+          dayInfo.points.forEach(function(pt, idx) {
+            var latlng = [pt.lat, pt.lng];
+            dayLatLngs.push(latlng);
+            bounds.push(latlng);
+
+            var markerHtml = '<div style="background-color:' + dayInfo.color + '; width:26px; height:26px; border-radius:50%; border:2px solid #fff; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:bold; box-shadow: 0 3px 10px rgba(0,0,0,0.3);">' + (idx + 1) + '</div>';
+            
+            var icon = L.divIcon({
+              html: markerHtml,
+              className: 'custom-div-icon',
+              iconSize: [26, 26],
+              iconAnchor: [13, 13]
+            });
+
+            var marker = L.marker(latlng, { icon: icon }).addTo(markerGroup);
+            var popupContent = '<div style="max-width:200px;">' +
+              '<strong>' + pt.name + ' (D' + day + '-' + (idx + 1) + ')</strong><br/>' +
+              '<div style="font-size:11px; margin-top:4px; border-top:1px solid #eee; padding-top:4px; line-height:1.4;">' +
+              domInfo.desc +
+              '</div></div>';
+            
+            if (idx === 0) {
+              marker.bindPopup(popupContent).addTo(markerGroup).openPopup();
+            } else {
+              marker.bindPopup(popupContent);
+            }
+          });
+
+          if (dayLatLngs.length > 1) {
+            L.polyline(dayLatLngs, {
+              color: dayInfo.color,
+              weight: 5,
+              opacity: 0.9
+            }).addTo(lineGroup);
+          }
+        }
+
+        if (bounds.length > 0) {
+          map.fitBounds(bounds, { padding: [30, 30] });
+        }
+      }
+
+      function bindOverviewInteraction() {
+        document.querySelectorAll('.overview-item').forEach(function(item) {
+          item.style.cursor = 'pointer';
+          item.addEventListener('click', function(e) {
+            var dot = this.querySelector('.dot');
+            if (dot) {
+              var dayNum = dot.textContent.trim();
+              filterMapDay(parseInt(dayNum, 10));
+              
+              var targetCard = document.querySelector('[data-editable="day' + dayNum + '"]');
+              if (targetCard) {
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }
+          });
+        });
+      }
 
       // === 初始化 ===
       loadRemoteEdits();
