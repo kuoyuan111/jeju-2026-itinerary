@@ -792,6 +792,97 @@
       content: "" !important;
     }
 
+    /* ====== 天氣預報樣式 ====== */
+    .weather-skeleton {
+      padding: 10px 0;
+    }
+    .skeleton-line {
+      background: linear-gradient(90deg, #f5f0ea 25%, #e8e2d9 50%, #f5f0ea 75%);
+      background-size: 200% 100%;
+      animation: loadingSkeleton 1.5s infinite;
+    }
+    @keyframes loadingSkeleton {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .weather-today {
+      text-align: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f2e6da;
+      margin-bottom: 12px;
+    }
+    .weather-today-temp {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--purple);
+      margin: 4px 0;
+    }
+    .weather-today-icon {
+      font-size: 32px;
+    }
+    .weather-today-desc {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .weather-today-tips {
+      font-size: 11.5px;
+      color: #666;
+      margin-top: 6px;
+      padding: 6px 10px;
+      background: #f7f3ed;
+      border-radius: 8px;
+      line-height: 1.4;
+      display: inline-block;
+    }
+    .weather-forecast-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .weather-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      color: var(--ink);
+    }
+    .weather-row-day {
+      width: 65px;
+      font-weight: 700;
+    }
+    .weather-row-icon {
+      font-size: 18px;
+      width: 25px;
+      text-align: center;
+    }
+    .weather-row-temp {
+      font-weight: 700;
+      width: 75px;
+      text-align: right;
+    }
+    .weather-row-rain {
+      font-size: 11px;
+      color: #1a6fb5;
+      width: 50px;
+      font-weight: 700;
+    }
+    .weather-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      background: #fff5f5;
+      border: 1px solid #ffdddd;
+      color: #c62828;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      margin-top: 12px;
+      line-height: 1.4;
+      text-align: left;
+    }
+
     /* 修正列印地圖的問題 */
     @media print {
       .map-controls, #map { display: none !important; }
@@ -1044,6 +1135,20 @@
               <li>16 登機口對面領退稅</li>
               <li>免稅精品 20 登機口領取</li>
             </ul>
+          </div>
+        </div>
+
+        <div class="side-card no-print" id="weatherCard">
+          <div class="side-head purple">☀️ 濟州即時天氣預報</div>
+          <div class="side-body" style="padding: 14px;">
+            <div id="weatherContent">
+              <!-- 骨架加載動畫 -->
+              <div class="weather-skeleton">
+                <div class="skeleton-line" style="width: 60%; height: 24px; margin: 8px auto 12px auto; border-radius: 4px;"></div>
+                <div class="skeleton-line" style="width: 80%; height: 16px; margin: 0 auto 8px auto; border-radius: 4px;"></div>
+                <div class="skeleton-line" style="width: 100%; height: 36px; margin-top: 16px; border-radius: 6px;"></div>
+              </div>
+            </div>
           </div>
         </div>
       </aside>
@@ -2870,12 +2975,130 @@
         pendingShareData = null;
       };
 
+      // ====== 濟州島即時天氣預報 ======
+      function initWeatherForecast() {
+        var contentEl = document.getElementById('weatherContent');
+        if (!contentEl) return;
+
+        var url = 'https://api.open-meteo.com/v1/forecast?latitude=33.38&longitude=126.63&daily=weathercode,temperature_2m_max,temperature_2m_min,rain_sum&timezone=Asia/Seoul';
+
+        fetch(url)
+          .then(function(res) {
+            return res.json();
+          })
+          .then(function(data) {
+            if (!data || !data.daily) {
+              throw new Error('Invalid weather data');
+            }
+
+            var daily = data.daily;
+            var html = '';
+
+            // WMO 天氣代碼對應表
+            var weatherMap = {
+              0: { text: '晴朗', icon: '☀️', tips: '陽光充沛，紫外線較強，自駕請戴太陽眼鏡並做好防曬。' },
+              1: { text: '晴時多雲', icon: '🌤️', tips: '氣候宜人，視野清晰，非常適合戶外景點自駕。' },
+              2: { text: '多雲', icon: '⛅', tips: '多雲舒適，適合拍照與戶外徒步。' },
+              3: { text: '陰天', icon: '☁️', tips: '光線柔和，溫度舒適，建議隨身攜帶薄外套。' },
+              45: { text: '霧氣', icon: '🌫️', tips: '山路（如1100道路）易有濃霧，自駕請開啟霧燈並減速慢行！' },
+              48: { text: '濃霧', icon: '🌫️', tips: '局部地區濃霧，山區自駕能見度低，請注意行車安全！' },
+              51: { text: '毛毛雨', icon: '🌧️', tips: '有細雨，建議攜帶雨具，注意路面濕滑。' },
+              53: { text: '小雨', icon: '🌧️', tips: '局部降雨，戶外活動建議備妥雨傘或雨衣。' },
+              55: { text: '細雨', icon: '🌧️', tips: '持續性細雨，路面濕滑，駕車請保持安全車距。' },
+              61: { text: '雨天', icon: '🌧️', tips: '陰雨綿綿，自駕請慢行，可考慮移至室內景點。' },
+              63: { text: '中雨', icon: '🌧️', tips: '雨勢明顯，路面濕滑，山區道路請減速並注意落石。' },
+              65: { text: '大雨', icon: '🌧️', tips: '雨勢強勁，容易積水，自駕請開大燈並放慢車速！' },
+              71: { text: '小雪', icon: '❄️', tips: '氣溫寒冷，路面易結冰，請注意防滑。' },
+              73: { text: '中雪', icon: '❄️', tips: '路面易積雪結冰，車輛行駛需小心打滑。' },
+              75: { text: '大雪', icon: '❄️', tips: '大雪紛飛，行車極易打滑，自駕請特別注意安全。' },
+              80: { text: '小陣雨', icon: '🌦️', tips: '陣雨來去匆匆，建議帶傘，隨時留意天氣變化。' },
+              81: { text: '陣雨', icon: '🌦️', tips: '有短暫陣雨，雨天自駕請開啟雨刷並減速。' },
+              82: { text: '強陣雨', icon: '🌦️', tips: '陣雨強烈，建議在室內稍作歇息再出發。' },
+              95: { text: '雷陣雨', icon: '⛈️', tips: '有雷雨，避免前往海邊或高地，建議啟動室內行程備案！' },
+              96: { text: '雷雨伴有冰雹', icon: '⛈️', tips: '天氣惡劣，建議留在室內避雨，自駕請靠邊停靠。' },
+              99: { text: '強雷陣雨', icon: '⛈️', tips: '雷雨極強，建議完全避免戶外活動，轉往室內商業街。' }
+            };
+
+            var daysOfWeek = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+
+            // 1. 今天的天氣 (Daily Index 0)
+            var todayCode = daily.weathercode[0];
+            var todayWeather = weatherMap[todayCode] || { text: '多雲', icon: '⛅', tips: '自駕出遊請注意安全。' };
+            var todayMaxTemp = Math.round(daily.temperature_2m_max[0]);
+            var todayMinTemp = Math.round(daily.temperature_2m_min[0]);
+            
+            html += '<div class="weather-today">';
+            html += '  <div class="weather-today-icon">' + todayWeather.icon + '</div>';
+            html += '  <div class="weather-today-desc">今日濟州島：' + todayWeather.text + '</div>';
+            html += '  <div class="weather-today-temp">' + todayMinTemp + '°C ~ ' + todayMaxTemp + '°C</div>';
+            html += '  <div class="weather-today-tips">💡 ' + todayWeather.tips + '</div>';
+            html += '</div>';
+
+            // 2. 未來 5 天預報 (Index 0 ~ 4)
+            html += '<div class="weather-forecast-list">';
+            var hasHeavyRain = false;
+            var hasFog = false;
+
+            for (var i = 0; i < 5; i++) {
+              var dateStr = daily.time[i];
+              var date = new Date(dateStr);
+              var dayName = daysOfWeek[date.getDay()];
+              if (i === 0) dayName = '今天';
+              else if (i === 1) dayName = '明天';
+
+              var code = daily.weathercode[i];
+              var weather = weatherMap[code] || { text: '多雲', icon: '⛅' };
+              var maxTemp = Math.round(daily.temperature_2m_max[i]);
+              var minTemp = Math.round(daily.temperature_2m_min[i]);
+              var rain = daily.rain_sum[i];
+
+              if (rain >= 5.0) hasHeavyRain = true;
+              if (code === 45 || code === 48) hasFog = true;
+
+              html += '<div class="weather-row">';
+              html += '  <span class="weather-row-day">' + dayName + '</span>';
+              html += '  <span class="weather-row-icon" title="' + weather.text + '">' + weather.icon + '</span>';
+              if (rain > 0) {
+                html += '  <span class="weather-row-rain">☔ ' + rain.toFixed(1) + 'mm</span>';
+              } else {
+                html += '  <span class="weather-row-rain" style="color:#bbb; font-weight:normal;">-</span>';
+              }
+              html += '  <span class="weather-row-temp">' + minTemp + '° ~ ' + maxTemp + '°</span>';
+              html += '</div>';
+            }
+            html += '</div>';
+
+            // 3. 雨天/霧天警示標籤
+            if (hasHeavyRain) {
+              html += '<div class="weather-alert">';
+              html += '  <span>⚠️</span>';
+              html += '  <div>預報未來幾天雨勢明顯，若雨天建議啟動室內行程備案（如神話公園商業街、亂打秀或地下商街）！</div>';
+              html += '</div>';
+            } else if (hasFog) {
+              html += '<div class="weather-alert" style="background:#f0f5ff; border-color:#d0e0ff; color:#1a6fb5;">';
+              html += '  <span>🌫️</span>';
+              html += '  <div>預報有霧。漢拏山山區道路能見度低，開車請開大燈並放慢車速。</div>';
+              html += '</div>';
+            }
+
+            contentEl.innerHTML = html;
+          })
+          .catch(function(err) {
+            console.error('Failed to load weather:', err);
+            contentEl.innerHTML = '<div style="text-align:center; font-size:12px; color:#c62828; padding:20px 0;">' +
+              '❌ 天氣載入失敗<br/>' +
+              '<span style="font-size:11px; color:#888;">請檢查網路連線或稍後再試</span>' +
+              '</div>';
+          });
+      }
+
       // === 初始化 ===
       loadRemoteEdits();
       updateResetBtn();
       initTripCountdown();
       initMobileAccordion();
       checkSharedLink();
+      initWeatherForecast();
 
       // 解決 iOS Safari 事件委派不冒泡的 Bug
       document.querySelectorAll('[data-editable]').forEach(function(el) {
