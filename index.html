@@ -397,17 +397,133 @@
       .day-photo { width: 100%; height: 120px; }
       .hero h1 { font-size: 28px; }
     }
+
+    /* ====== 編輯模式樣式 ====== */
+    .edit-toggle { position: relative; }
+    .edit-toggle .edit-dot {
+      display: none; width: 10px; height: 10px; border-radius: 50%;
+      background: #e53935; position: absolute; top: -2px; right: -2px;
+      animation: editPulse 1.4s infinite ease-in-out;
+    }
+    .edit-toggle.active .edit-dot { display: block; }
+    .edit-toggle.active {
+      background: linear-gradient(135deg, #e53935, #c62828) !important;
+      box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3) !important;
+    }
+    @keyframes editPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.6); opacity: 0.4; }
+    }
+    body.edit-mode [data-editable]:hover {
+      outline: 2px dashed var(--orange);
+      outline-offset: 4px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    body.edit-mode [data-editable] {
+      transition: outline 0.2s, outline-offset 0.2s;
+    }
+    .reset-btn { display: none !important; }
+    .reset-btn.visible { display: inline-flex !important; }
+
+    /* ====== 編輯彈窗 (Modal) ====== */
+    .edit-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      justify-content: center; align-items: center;
+      opacity: 0; transition: opacity 0.25s ease;
+    }
+    .edit-overlay.show { display: flex; opacity: 1; }
+    .edit-modal {
+      background: #fff; border-radius: 24px; padding: 32px;
+      width: 520px; max-width: 92vw; max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.08);
+      transform: translateY(20px) scale(0.97);
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .edit-overlay.show .edit-modal {
+      transform: translateY(0) scale(1);
+    }
+    .edit-modal h3 {
+      font-size: 20px; font-weight: 800; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #2b2b2b 30%, #7b5ea7 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .edit-modal h3::before { content: "✏️"; -webkit-text-fill-color: initial; }
+    .edit-modal input[type="text"], .edit-modal textarea {
+      width: 100%; padding: 12px 16px; border: 2px solid #ecd9c8;
+      border-radius: 12px; font-family: inherit; font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #fffbf7;
+    }
+    .edit-modal input[type="text"]:focus, .edit-modal textarea:focus {
+      outline: none; border-color: var(--orange);
+      box-shadow: 0 0 0 4px rgba(240, 120, 64, 0.1);
+    }
+    .edit-modal textarea { min-height: 80px; resize: vertical; }
+    .edit-field { margin-bottom: 14px; }
+    .edit-field label {
+      display: block; font-size: 12px; font-weight: 700;
+      color: var(--muted); margin-bottom: 6px; text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .edit-list-item {
+      display: flex; gap: 8px; margin-bottom: 8px; align-items: center;
+    }
+    .edit-list-item input { flex: 1; }
+    .edit-list-item .remove-item {
+      width: 32px; height: 32px; border: none; border-radius: 50%;
+      background: #fee; color: #e53935; font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.2s; flex-shrink: 0;
+    }
+    .edit-list-item .remove-item:hover {
+      background: #fcc; transform: scale(1.1);
+    }
+    .add-item-btn {
+      border: 2px dashed #ecd9c8; background: transparent; border-radius: 12px;
+      padding: 10px; width: 100%; font-family: inherit; font-size: 13px;
+      font-weight: 700; color: var(--orange); cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .add-item-btn:hover { background: #fff8f2; border-color: var(--orange); }
+    .edit-actions {
+      display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end;
+    }
+    .edit-actions button {
+      border: none; border-radius: 999px; padding: 12px 28px;
+      font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .edit-actions .save-btn {
+      background: var(--orange-grad); color: #fff;
+      box-shadow: 0 4px 12px rgba(240, 120, 64, 0.2);
+    }
+    .edit-actions .save-btn:hover {
+      transform: translateY(-2px); box-shadow: 0 6px 16px rgba(240, 120, 64, 0.3);
+    }
+    .edit-actions .cancel-btn {
+      background: #f5f0ea; color: var(--ink);
+    }
+    .edit-actions .cancel-btn:hover { background: #ece5dc; }
+    @media print {
+      .edit-overlay, .edit-toggle, .reset-btn { display: none !important; }
+    }
   </style>
 </head>
 <body>
   <div class="toolbar no-print">
     <button onclick="window.print()">列印 / 存成 PDF</button>
     <button class="secondary" onclick="alert('在專案資料夾執行：npm run export:png\\n會產生 jeju-2026-itinerary.png')">PNG 匯出說明</button>
+    <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()">✏️ 編輯模式<span class="edit-dot"></span></button>
+    <button class="secondary reset-btn" id="resetBtn" onclick="resetEdits()">🔄 重置</button>
   </div>
 
   <div class="page" id="infographic">
     <header class="hero">
-      <div class="flight-box">
+      <div class="flight-box" data-editable="flight">
         <strong>航班資訊</strong>
         <div class="flight-row"><span>去程 TW688</span><span>7/4 14:25→17:30</span></div>
         <div class="flight-row"><span>回程 LJ763</span><span>7/11 22:15→00:15</span></div>
@@ -420,8 +536,8 @@
         <circle cx="75" cy="25" r="14" fill="#ffcc66"/>
       </svg>
 
-      <h1>濟州島 8天7夜行程攻略</h1>
-      <div class="subtitle">2026/7/4（六）～7/11（六）・自駕遊・VENTIMO・輕鬆放電之旅</div>
+      <h1 data-editable="title">濟州島 8天7夜行程攻略</h1>
+      <div class="subtitle" data-editable="subtitle">2026/7/4（六）～7/11（六）・自駕遊・VENTIMO・輕鬆放電之旅</div>
 
       <img class="hero-deco right" src="assets/hallabong-mascot.png" alt="濟州橘吉祥物" />
     </header>
@@ -589,7 +705,7 @@
         <div class="side-card">
           <div class="side-head orange">小提醒</div>
           <div class="side-body">
-            <ul class="tips">
+            <ul class="tips" data-editable="tips">
               <li>入境前完成韓國網路入境申辦</li>
               <li>必帶：暈船藥、摩托車國際駕照、護照</li>
               <li>牛島買船票需護照</li>
@@ -601,7 +717,7 @@
         <div class="side-card">
           <div class="side-head orange">機場退稅</div>
           <div class="side-body">
-            <ul class="tips">
+            <ul class="tips" data-editable="tax-refund">
               <li>5 號出口右轉</li>
               <li>16 登機口對面領退稅</li>
               <li>免稅精品 20 登機口領取</li>
@@ -622,7 +738,7 @@
       </div>
 
       <div class="points-grid">
-        <div class="info-card">
+        <div class="info-card" data-editable="ventimo">
           <h3>VENTIMO 附近採買</h3>
           <ul>
             <li>CU 便利商店：飯店 1 樓隔壁，24h</li>
@@ -630,7 +746,7 @@
             <li>E-MART 新濟州店：車程 12 分，大採購首選</li>
           </ul>
         </div>
-        <div class="info-card">
+        <div class="info-card" data-editable="highlights">
           <h3>行程小重點</h3>
           <div class="check-grid">
             <div class="check-item">自駕彈性高</div>
@@ -645,13 +761,25 @@
 
       <div class="closing">
         <img src="assets/hallabong-mascot.png" alt="吉祥物" />
-        <div class="bubble">一起出發去濟州島吧！</div>
+        <div class="bubble" data-editable="closing">一起出發去濟州島吧！</div>
       </div>
 
       <div class="version-badge">
         <span id="version-info"></span>
       </div>
     </section>
+  </div>
+
+  <!-- 編輯彈窗 -->
+  <div class="edit-overlay" id="editOverlay">
+    <div class="edit-modal">
+      <h3 id="modalTitle">編輯</h3>
+      <div id="modalBody"></div>
+      <div class="edit-actions">
+        <button class="cancel-btn" onclick="closeModal()">取消</button>
+        <button class="save-btn" onclick="saveEdit()">儲存</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -668,6 +796,335 @@
                pad(now.getHours()) + ':' +
                pad(now.getMinutes());
       el.textContent = '最後更新：' + ts;
+    })();
+
+    // ====== 可編輯行程功能 ======
+    (function() {
+      'use strict';
+
+      var STORAGE_KEY = 'jeju-itinerary-edits';
+      var editMode = false;
+      var currentField = null;
+
+      // 原始內容備份
+      var originalData = {
+        title: '濟州島 8天7夜行程攻略',
+        subtitle: '2026/7/4（六）～7/11（六）・自駕遊・VENTIMO・輕鬆放電之旅',
+        flight: {
+          depart: { label: '去程 TW688', time: '7/4 14:25→17:30' },
+          return: { label: '回程 LJ763', time: '7/11 22:15→00:15' }
+        },
+        tips: [
+          '入境前完成韓國網路入境申辦',
+          '必帶：暈船藥、摩托車國際駕照、護照',
+          '牛島買船票需護照',
+          '雨天備室內方案（神話公園、地下街）',
+          '大型超市 E-MART 每月約兩天公休'
+        ],
+        'tax-refund': [
+          '5 號出口右轉',
+          '16 登機口對面領退稅',
+          '免稅精品 20 登機口領取'
+        ],
+        ventimo: [
+          'CU 便利商店：飯店 1 樓隔壁，24h',
+          '中型超市：步行 3 分，蓮洞 290 巷 Mart',
+          'E-MART 新濟州店：車程 12 分，大採購首選'
+        ],
+        highlights: [
+          '自駕彈性高',
+          '熟成到已預約',
+          'Flowave 已預約',
+          '牛島需護照',
+          '大蒜麵包 Day 4/7',
+          '亂打秀 Day 6/8'
+        ],
+        closing: '一起出發去濟州島吧！'
+      };
+
+      var fieldLabels = {
+        title: '主標題',
+        subtitle: '副標題',
+        flight: '航班資訊',
+        tips: '小提醒',
+        'tax-refund': '機場退稅資訊',
+        ventimo: 'VENTIMO 附近採買',
+        highlights: '行程小重點',
+        closing: '結尾訊息'
+      };
+
+      // === 工具函數 ===
+      function getSavedEdits() {
+        try {
+          var data = localStorage.getItem(STORAGE_KEY);
+          return data ? JSON.parse(data) : {};
+        } catch(e) { return {}; }
+      }
+
+      function saveToStorage(edits) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+        updateResetBtn();
+      }
+
+      function updateResetBtn() {
+        var btn = document.getElementById('resetBtn');
+        var edits = getSavedEdits();
+        var hasEdits = Object.keys(edits).length > 0;
+        btn.className = 'secondary reset-btn' + (hasEdits ? ' visible' : '');
+      }
+
+      // === 套用已儲存的編輯 ===
+      function applyEdits() {
+        var edits = getSavedEdits();
+        if (!edits || Object.keys(edits).length === 0) return;
+
+        Object.keys(edits).forEach(function(field) {
+          applyFieldEdit(field, edits[field]);
+        });
+      }
+
+      function applyFieldEdit(field, value) {
+        var el = document.querySelector('[data-editable="' + field + '"]');
+        if (!el) return;
+
+        switch(field) {
+          case 'title':
+          case 'subtitle':
+          case 'closing':
+            el.textContent = value;
+            break;
+          case 'flight':
+            var rows = el.querySelectorAll('.flight-row');
+            if (rows[0]) {
+              rows[0].children[0].textContent = value.depart.label;
+              rows[0].children[1].textContent = value.depart.time;
+            }
+            if (rows[1]) {
+              rows[1].children[0].textContent = value.return.label;
+              rows[1].children[1].textContent = value.return.time;
+            }
+            break;
+          case 'tips':
+          case 'tax-refund':
+            var ul = el;
+            ul.innerHTML = '';
+            value.forEach(function(txt) {
+              var li = document.createElement('li');
+              li.textContent = txt;
+              ul.appendChild(li);
+            });
+            break;
+          case 'ventimo':
+            var list = el.querySelector('ul');
+            if (list) {
+              list.innerHTML = '';
+              value.forEach(function(txt) {
+                var li = document.createElement('li');
+                li.textContent = txt;
+                list.appendChild(li);
+              });
+            }
+            break;
+          case 'highlights':
+            var grid = el.querySelector('.check-grid');
+            if (grid) {
+              grid.innerHTML = '';
+              value.forEach(function(txt) {
+                var div = document.createElement('div');
+                div.className = 'check-item';
+                div.textContent = txt;
+                grid.appendChild(div);
+              });
+            }
+            break;
+        }
+      }
+
+      // === 編輯模式切換 ===
+      window.toggleEditMode = function() {
+        editMode = !editMode;
+        document.body.classList.toggle('edit-mode', editMode);
+        document.getElementById('editToggle').classList.toggle('active', editMode);
+      };
+
+      // === 重置功能 ===
+      window.resetEdits = function() {
+        if (!confirm('確定要重置所有編輯？\n將回到原始版本，所有修改將被清除。')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        // 還原所有欄位
+        Object.keys(originalData).forEach(function(field) {
+          applyFieldEdit(field, originalData[field]);
+        });
+        updateResetBtn();
+      };
+
+      // === Modal 操作 ===
+      function openModal(field) {
+        currentField = field;
+        var overlay = document.getElementById('editOverlay');
+        var title = document.getElementById('modalTitle');
+        var body = document.getElementById('modalBody');
+
+        title.textContent = '編輯「' + fieldLabels[field] + '」';
+        body.innerHTML = '';
+
+        var edits = getSavedEdits();
+        var current = edits[field] || originalData[field];
+
+        switch(field) {
+          case 'title':
+          case 'subtitle':
+          case 'closing':
+            body.innerHTML = '<div class="edit-field">' +
+              '<label>' + fieldLabels[field] + '</label>' +
+              '<input type="text" id="editInput" value="' + escapeHtml(current) + '" />' +
+              '</div>';
+            break;
+          case 'flight':
+            body.innerHTML = '<div class="edit-field">' +
+              '<label>去程航班</label>' +
+              '<input type="text" id="editFlightDL" value="' + escapeHtml(current.depart.label) + '" />' +
+              '</div>' +
+              '<div class="edit-field">' +
+              '<label>去程時間</label>' +
+              '<input type="text" id="editFlightDT" value="' + escapeHtml(current.depart.time) + '" />' +
+              '</div>' +
+              '<div class="edit-field">' +
+              '<label>回程航班</label>' +
+              '<input type="text" id="editFlightRL" value="' + escapeHtml(current.return.label) + '" />' +
+              '</div>' +
+              '<div class="edit-field">' +
+              '<label>回程時間</label>' +
+              '<input type="text" id="editFlightRT" value="' + escapeHtml(current.return.time) + '" />' +
+              '</div>';
+            break;
+          case 'tips':
+          case 'tax-refund':
+          case 'ventimo':
+          case 'highlights':
+            var items = Array.isArray(current) ? current : [];
+            var listHtml = '<div id="editListContainer">';
+            items.forEach(function(item, i) {
+              listHtml += '<div class="edit-list-item">' +
+                '<input type="text" value="' + escapeHtml(item) + '" />' +
+                '<button class="remove-item" onclick="removeListItem(this)" title="刪除">×</button>' +
+                '</div>';
+            });
+            listHtml += '</div>' +
+              '<button class="add-item-btn" onclick="addListItem()">＋ 新增項目</button>';
+            body.innerHTML = listHtml;
+            break;
+        }
+
+        // 顯示 modal
+        overlay.style.display = 'flex';
+        requestAnimationFrame(function() {
+          overlay.classList.add('show');
+        });
+
+        // 自動聚焦第一個 input
+        setTimeout(function() {
+          var firstInput = body.querySelector('input, textarea');
+          if (firstInput) firstInput.focus();
+        }, 100);
+      }
+
+      window.closeModal = function() {
+        var overlay = document.getElementById('editOverlay');
+        overlay.classList.remove('show');
+        setTimeout(function() {
+          overlay.style.display = 'none';
+        }, 250);
+        currentField = null;
+      };
+
+      window.saveEdit = function() {
+        if (!currentField) return;
+        var edits = getSavedEdits();
+        var value;
+
+        switch(currentField) {
+          case 'title':
+          case 'subtitle':
+          case 'closing':
+            value = document.getElementById('editInput').value.trim();
+            break;
+          case 'flight':
+            value = {
+              depart: {
+                label: document.getElementById('editFlightDL').value.trim(),
+                time: document.getElementById('editFlightDT').value.trim()
+              },
+              return: {
+                label: document.getElementById('editFlightRL').value.trim(),
+                time: document.getElementById('editFlightRT').value.trim()
+              }
+            };
+            break;
+          case 'tips':
+          case 'tax-refund':
+          case 'ventimo':
+          case 'highlights':
+            var inputs = document.querySelectorAll('#editListContainer input');
+            value = [];
+            inputs.forEach(function(inp) {
+              var v = inp.value.trim();
+              if (v) value.push(v);
+            });
+            break;
+        }
+
+        if (value !== undefined) {
+          edits[currentField] = value;
+          saveToStorage(edits);
+          applyFieldEdit(currentField, value);
+        }
+        closeModal();
+      };
+
+      window.addListItem = function() {
+        var container = document.getElementById('editListContainer');
+        var div = document.createElement('div');
+        div.className = 'edit-list-item';
+        div.innerHTML = '<input type="text" value="" placeholder="輸入新項目..." />' +
+          '<button class="remove-item" onclick="removeListItem(this)" title="刪除">×</button>';
+        container.appendChild(div);
+        div.querySelector('input').focus();
+      };
+
+      window.removeListItem = function(btn) {
+        var item = btn.parentElement;
+        item.remove();
+      };
+
+      function escapeHtml(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      // === 事件綁定 ===
+      document.addEventListener('click', function(e) {
+        if (!editMode) return;
+        var target = e.target.closest('[data-editable]');
+        if (!target) return;
+        e.preventDefault();
+        e.stopPropagation();
+        openModal(target.getAttribute('data-editable'));
+      });
+
+      // ESC 關閉 modal
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+      });
+
+      // 點擊遮罩關閉
+      document.getElementById('editOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+      });
+
+      // === 初始化 ===
+      applyEdits();
+      updateResetBtn();
+
     })();
   </script>
 </body>

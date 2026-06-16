@@ -9,22 +9,27 @@
 ## ✅ 已完成功能
 
 ### 1. ✏️ 可編輯行程（版本 B - 完整版）
-- **狀態**: ✅ 完成
-- **分支**: `feature/editable-itinerary`
+- **狀態**: ✅ 完成（已合併至 `main`）
+- **實作方式**: 全部 inline 在 `index.html` 中（CSS + HTML + JavaScript）
 - **功能清單**:
-  - 進入編輯模式後可點擊任何內容直接編輯
-  - 自動保存到瀏覽器本地存儲（LocalStorage）
-  - 支持重置回原始版本
-  - 編輯彈窗界面
-  - 編輯模式視覺指示（紅色指示燈）
-  - 可編輯內容：
-    - 主標題和副標題
-    - 航班資訊（去程/回程）
-    - 小提醒列表（5 項）
-    - 機場退稅資訊（3 項）
-    - VENTIMO 附近採買（3 項）
-    - 行程小重點（6 項）
-    - 結尾訊息
+  - ✅ Toolbar「✏️ 編輯模式」按鈕切換編輯模式
+  - ✅ 編輯模式紅色脈衝指示燈（CSS animation）
+  - ✅ 編輯模式下可編輯元素 hover 顯示虛線框提示
+  - ✅ 點擊可編輯元素彈出 Modal 編輯彈窗（毛玻璃遮罩 + 動畫）
+  - ✅ 自動保存到 LocalStorage（key: `jeju-itinerary-edits`）
+  - ✅ 頁面載入時自動還原已儲存的編輯
+  - ✅ 「🔄 重置」按鈕（僅在有編輯時顯示，含確認對話框）
+  - ✅ 清單類型支持新增/刪除項目
+  - ✅ ESC 鍵 / 點擊遮罩關閉 Modal
+  - ✅ 可編輯內容（8 個區域）：
+    - 主標題（`data-editable="title"`）
+    - 副標題（`data-editable="subtitle"`）
+    - 航班資訊 - 去程/回程（`data-editable="flight"`）
+    - 小提醒列表 - 5 項（`data-editable="tips"`）
+    - 機場退稅資訊 - 3 項（`data-editable="tax-refund"`）
+    - VENTIMO 附近採買 - 3 項（`data-editable="ventimo"`）
+    - 行程小重點 - 6 項（`data-editable="highlights"`）
+    - 結尾訊息（`data-editable="closing"`）
 
 ---
 
@@ -492,5 +497,5 @@ hotfix/緊急修復       - 緊急修復
 ---
 
 **最後更新**: 2026/06/16  
-**版本**: v1.0 - 開發計劃  
-**狀態**: 🟢 已規劃，待開發
+**版本**: v1.1 - 可編輯行程功能已實作  
+**狀態**: 🟡 第一階段核心功能開發中
