@@ -398,6 +398,52 @@
       .day-body { grid-template-columns: 1fr; }
       .day-photo { width: 100%; height: 120px; }
       .hero h1 { font-size: 28px; }
+      
+      /* Toolbar 手機端緊湊化 */
+      .toolbar {
+        padding: 8px 10px !important;
+        gap: 6px !important;
+        flex-wrap: wrap;
+      }
+      .toolbar button {
+        padding: 8px 14px !important;
+        font-size: 11px !important;
+      }
+      
+      /* 側邊欄卡片摺疊收合 */
+      .side-card {
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+      }
+      .side-card .side-body {
+        display: none; /* 預設收起 */
+        padding: 12px;
+      }
+      .side-card.active .side-body {
+        display: block; /* 展開 */
+      }
+      .side-head {
+        cursor: pointer;
+        position: relative;
+        padding-right: 40px !important;
+        user-select: none;
+      }
+      .side-head::after {
+        content: "▼";
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 10px;
+        transition: transform 0.25s ease;
+        opacity: 0.6;
+        color: inherit;
+      }
+      .side-card.active .side-head::after {
+        transform: translateY(-50%) rotate(180deg);
+      }
     }
 
     /* ====== 編輯模式樣式 ====== */
@@ -674,6 +720,30 @@
     .naver-popup-btn:active {
       transform: translateY(0);
     }
+    /* ====== 倒計時樣式 ====== */
+    .countdown-container {
+      margin-top: 14px;
+      display: flex;
+      justify-content: center;
+    }
+    .countdown-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(240, 120, 64, 0.06);
+      border: 1px solid rgba(240, 120, 64, 0.18);
+      color: var(--orange);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 2px 10px rgba(240, 120, 64, 0.03);
+      animation: pulseSoft 2.5s infinite ease-in-out;
+    }
+    @keyframes pulseSoft {
+      0%, 100% { transform: scale(1); opacity: 0.95; }
+      50% { transform: scale(1.02); opacity: 1; box-shadow: 0 4px 15px rgba(240, 120, 64, 0.08); }
+    }
     /* 修正列印地圖的問題 */
     @media print {
       .map-controls, #map { display: none !important; }
@@ -716,6 +786,9 @@
 
       <h1 data-editable="title">濟州島 8天7夜行程攻略</h1>
       <div class="subtitle" data-editable="subtitle">2026/7/4（六）～7/11（六）・自駕遊・VENTIMO・輕鬆放電之旅</div>
+      <div class="countdown-container no-print">
+        <div class="countdown-badge" id="tripCountdown">⏳ 計算倒計時中...</div>
+      </div>
 
       <img class="hero-deco right" src="assets/hallabong-mascot.png" alt="濟州橘吉祥物" />
     </header>
@@ -867,7 +940,8 @@
       </div>
 
       <aside class="sidebar">
-        <div class="side-card">
+        <div id="countdownAlert" class="countdown-alert" style="display:none;"></div>
+        <div class="side-card active">
           <div class="side-head purple">行程快速總覽</div>
           <div class="side-body">
             <div class="overview-item"><span class="dot" style="background:var(--d1)">1</span>抵達・租車・熟成到</div>
@@ -880,7 +954,7 @@
             <div class="overview-item"><span class="dot" style="background:var(--d8)">8</span>環島・還車返程</div>
           </div>
         </div>
-        <div class="side-card">
+        <div class="side-card active">
           <div class="side-head orange">自駕路線地圖</div>
           <div class="side-body" style="padding: 12px;">
             <div class="map-controls">
@@ -2515,9 +2589,80 @@
         });
       }
 
+      // === 倒計時邏輯 ===
+      function initTripCountdown() {
+        var el = document.getElementById('tripCountdown');
+        if (!el) return;
+
+        var departureTime = new Date('2026/07/04 14:25:00').getTime();
+        var endTime = new Date('2026/07/12 00:15:00').getTime();
+
+        function update() {
+          var now = new Date().getTime();
+          var diff = departureTime - now;
+
+          if (diff > 0) {
+            var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            el.innerHTML = '✈️ 濟州島之旅倒計時：D-' + days + ' 天 ' + 
+                           (hours < 10 ? '0' + hours : hours) + ' 小時 ' + 
+                           (minutes < 10 ? '0' + minutes : minutes) + ' 分 ' + 
+                           (seconds < 10 ? '0' + seconds : seconds) + ' 秒';
+          } else if (now >= departureTime && now <= endTime) {
+            var dayNum = Math.floor((now - departureTime) / (1000 * 60 * 60 * 24)) + 1;
+            el.innerHTML = '🌴 濟州島度假中！正在享受美好的第 ' + dayNum + ' 天！';
+          } else {
+            el.innerHTML = '✨ 濟州島自駕之旅已圓滿結束，留下滿滿的美好回憶！';
+          }
+        }
+
+        update();
+        setInterval(update, 1000);
+      }
+
+      // === 手機端側邊欄摺疊控制 ===
+      function initMobileAccordion() {
+        var heads = document.querySelectorAll('.side-head');
+        heads.forEach(function(head) {
+          head.addEventListener('click', function() {
+            if (window.innerWidth <= 720) {
+              var card = this.parentElement;
+              if (card) {
+                card.classList.toggle('active');
+                
+                if (card.classList.contains('active') && card.querySelector('#map')) {
+                  setTimeout(function() {
+                    if (typeof map !== 'undefined' && map) {
+                      map.invalidateSize();
+                    }
+                  }, 300);
+                }
+              }
+            }
+          });
+        });
+        
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 720) {
+            document.querySelectorAll('.side-card').forEach(function(card) {
+              card.classList.remove('active');
+            });
+          } else {
+            var cards = document.querySelectorAll('.side-card');
+            if (cards[0]) cards[0].classList.add('active');
+            if (cards[1]) cards[1].classList.add('active');
+          }
+        });
+      }
+
       // === 初始化 ===
       loadRemoteEdits();
       updateResetBtn();
+      initTripCountdown();
+      initMobileAccordion();
 
       // 解決 iOS Safari 事件委派不冒泡的 Bug
       document.querySelectorAll('[data-editable]').forEach(function(el) {
