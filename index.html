@@ -512,18 +512,69 @@
     @media print {
       .edit-overlay, .edit-toggle, .reset-btn { display: none !important; }
     }
+    /* ====== 下拉選單 (Dropdown) ====== */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      margin-top: 8px;
+      background-color: #fff;
+      min-width: 180px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      z-index: 1000;
+      padding: 8px;
+      border: 1px solid #f0e2d5;
+      animation: dropdownFade 0.2s ease;
+    }
+    @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dropdown:hover .dropdown-content, .dropdown.active .dropdown-content {
+      display: block;
+    }
+    .dropdown-content button {
+      width: 100%;
+      text-align: left;
+      background: transparent !important;
+      color: var(--ink) !important;
+      border: none !important;
+      padding: 10px 16px !important;
+      border-radius: 8px !important;
+      font-size: 13px !important;
+      box-shadow: none !important;
+      display: block !important;
+      transition: background 0.2s !important;
+    }
+    .dropdown-content button:hover {
+      background: #fff5ed !important;
+      color: var(--orange) !important;
+    }
   </style>
 </head>
 <body>
   <div class="toolbar no-print">
     <button onclick="window.print()">列印 / 存成 PDF</button>
-    <button class="secondary" onclick="alert('在專案資料夾執行：npm run export:png\\n會產生 jeju-2026-itinerary.png')">PNG 匯出說明</button>
-    <button class="secondary" onclick="exportItineraryData()">📤 匯出行程檔</button>
-    <button class="secondary" onclick="triggerImportData()">📥 匯入行程檔</button>
-    <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importItineraryData(event)" />
     <button class="secondary" onclick="syncToGitHub()">☁️ 同步到 GitHub</button>
+    
+    <div class="dropdown" id="manageDropdown">
+      <button class="secondary" onclick="toggleDropdown(event)">⚙️ 管理與備份</button>
+      <div class="dropdown-content">
+        <button onclick="exportItineraryData()">📤 匯出行程檔</button>
+        <button onclick="triggerImportData()">📥 匯入行程檔</button>
+        <button id="resetBtn" onclick="resetEdits()">🔄 重置為預設</button>
+        <button onclick="alert('在專案資料夾執行：npm run export:png\\n會產生 jeju-2026-itinerary.png')">ℹ️ PNG 匯出說明</button>
+      </div>
+    </div>
+    <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importItineraryData(event)" />
+    
     <button class="edit-toggle" id="editToggle" onclick="toggleEditMode()">✏️ 編輯模式<span class="edit-dot"></span></button>
-    <button class="secondary reset-btn" id="resetBtn" onclick="resetEdits()">🔄 重置</button>
   </div>
 
   <div class="page" id="infographic">
@@ -981,9 +1032,12 @@
 
       function updateResetBtn() {
         var btn = document.getElementById('resetBtn');
+        if (!btn) return;
         var edits = getSavedEdits();
         var hasEdits = Object.keys(edits).length > 0;
-        btn.className = 'secondary reset-btn' + (hasEdits ? ' visible' : '');
+        btn.disabled = !hasEdits;
+        btn.style.opacity = hasEdits ? '1' : '0.5';
+        btn.style.pointerEvents = hasEdits ? 'auto' : 'none';
       }
 
       // === 套用已儲存的編輯 ===
@@ -1252,6 +1306,8 @@
             if (firstInput) firstInput.focus();
           }, 100);
           return;
+        }
+
         var edits = getSavedEdits();
         var current;
         if (field === 'github-token') {
@@ -1681,6 +1737,17 @@
             updateResetBtn();
           });
       }
+
+      window.toggleDropdown = function(e) {
+        e.stopPropagation();
+        var dropdown = document.getElementById('manageDropdown');
+        if (dropdown) dropdown.classList.toggle('active');
+      };
+      
+      document.addEventListener('click', function() {
+        var dropdown = document.getElementById('manageDropdown');
+        if (dropdown) dropdown.classList.remove('active');
+      });
 
       // === 初始化 ===
       loadRemoteEdits();
